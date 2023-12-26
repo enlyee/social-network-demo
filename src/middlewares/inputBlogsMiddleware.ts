@@ -9,7 +9,7 @@ const blogUrlValidator = body('websiteUrl').trim().isLength({min: 1, max: 100}).
 /*const isExistsName = body('name').custom(v => {
     const blog = blogRepository.findBlogByName(v)
     if (blog) {
-        throw new Error('Blog already exist')
+        throw new Error('Blog already exist' )
     }
     return true
 })*/
