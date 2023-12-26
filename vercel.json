@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "name": "hw3",
   "builds": [
     {
       "src": "dist/index.js",
