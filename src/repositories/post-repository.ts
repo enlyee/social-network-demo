@@ -36,13 +36,13 @@ export const postRepository = {
     },
     async deletePost(id: string){
         let ind = await postsCollection.deleteOne({_id: new ObjectId(id)})
-        return !!ind
+        return !!ind.deletedCount
     },
     async updatePost(id: string, post: postInputType){
         let ind = await postsCollection.updateOne({_id: new ObjectId(id)}, {
             $set: {title: post.title, shortDescription: post.shortDescription, content: post.content, blogId: post.blogId}
         })
-        return !!ind;
+        return !!ind.matchedCount;
 
     }
 }

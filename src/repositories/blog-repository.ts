@@ -38,6 +38,6 @@ export const blogRepository = {
         let ind = await blogsCollection.updateOne({_id: new ObjectId(id)}, {
             $set: {name: blog.name, description: blog.description, websiteUrl: blog.websiteUrl}
         })
-        return !!ind;
+        return !!ind.matchedCount;
     }
 }

@@ -7,9 +7,9 @@ import {inputMiddleware} from "../validators/inputMiddleware";
 const postTitleValidator = body('title').trim().isLength({min: 1, max: 30})
 const postDescriptionValidator = body('shortDescription').trim().isLength({min: 1, max: 100})
 const postContentValidator = body('content').trim().isLength({min: 1, max: 100})
-const postBlogIdIsExists = body('blogId').custom(v => {
-    let blogId = blogsCollection.findOne({_id: new ObjectId(v)})
-    if (blogId === null) {
+const postBlogIdIsExists = body('blogId').custom(async (v) => {
+    let blogId = await blogsCollection.findOne({_id: new ObjectId(v)})
+    if (!blogId) {
         throw new Error ("This blogId doesn't exist")
     }
     return true
