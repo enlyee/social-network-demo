@@ -32,7 +32,7 @@ export const blogRepository = {
     },
     async deleteBlog(id: string): Promise<boolean>{
         let blogIndex = await blogsCollection.deleteOne({_id: (new ObjectId (id))})
-        return !!blogIndex;
+        return !!blogIndex.deletedCount
     },
     async updateBlog(id: string, blog: blogInputType): Promise<boolean>{
         let ind = await blogsCollection.updateOne({_id: new ObjectId(id)}, {
