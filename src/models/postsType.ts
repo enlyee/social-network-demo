@@ -1,4 +1,6 @@
-export type postsOutputType = {
+import {BlogsOutputType} from "./blogsType";
+
+export type PostsOutputType = {
     id: string,
     title: string,
     shortDescription: string,
@@ -7,17 +9,30 @@ export type postsOutputType = {
     blogName: string,
     createdAt: string
 }
-export type postInputType = {
+export type PostInputType = {
     title: string,
     shortDescription: string,
     content: string,
     blogId: string
 }
-export type postsDbType = {
+export type PostInputTypeWithoutId = {
+    title: string,
+    shortDescription: string,
+    content: string,
+}
+export type PostsDbType = {
     title: string,
     shortDescription: string,
     content: string,
     blogId: string,
     blogName: string,
     createdAt: string
+}
+
+export type QueryPostsOutputType = {
+    pagesCount: number,
+    page: number,
+    pageSize: number,
+    totalCount: number,
+    items: PostsOutputType[]
 }

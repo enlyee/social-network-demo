@@ -1,6 +1,6 @@
 import express, {Request, Response} from "express";
-import {blogRouter} from "./routers/blog-router";
-import {postRouter} from "./routers/post-router";
+import {blogRouter} from "./routers/blogRouter";
+import {postRouter} from "./routers/postRouter";
 import {blogsCollection, postsCollection} from "./db/runDb";
 
 export const app = express()
