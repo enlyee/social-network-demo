@@ -26,8 +26,8 @@ export const blogRepository = {
             .toArray()
         return {
             pagesCount: Math.ceil(collectionSize/pageSize),
-            page: pageNumber,
-            pageSize: pageSize,
+            page: +pageNumber,
+            pageSize: +pageSize,
             totalCount: collectionSize,
             items: blogs.map(BlogMapper)
         }
@@ -74,8 +74,8 @@ export const blogRepository = {
             .toArray()
         return {
             pagesCount: Math.ceil(collectionSize/pageSize),
-            page: pageNumber,
-            pageSize: pageSize,
+            page: +pageNumber,
+            pageSize: +pageSize,
             totalCount: collectionSize,
             items: posts.map(PostMapper)
         }

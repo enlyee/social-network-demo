@@ -64,6 +64,11 @@ blogRouter.get('/:id/posts', async (req: RequestWithParamsAndQuery<{ id: string 
 })
 
 blogRouter.post('/:id/posts', authMiddleware, ...InputPostsMiddlewareWithoutId, async (req: RequestWithParamsAndBody<{id: string}, PostInputTypeWithoutId>, res: Response)=> {
+    const blog = await blogService.getBlogById(req.params.id)
+    if (!blog) {
+        res.sendStatus(404)
+        return
+    }
     const newPost = await blogService.createPostByBlogId(req.params.id, req.body)
     if (!newPost) {
         res.sendStatus(404)
