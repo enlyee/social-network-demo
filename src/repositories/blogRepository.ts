@@ -34,9 +34,6 @@ export const blogRepository = {
 
     },
     async getBlogById(id: string): Promise<BlogsOutputType | false> {
-        if (!ObjectId.isValid(id)) {
-            return false
-        }
         const blog = await blogsCollection.findOne({_id: new ObjectId(id)})
         if (blog) {
             return BlogMapper(blog)
@@ -54,9 +51,7 @@ export const blogRepository = {
 
     },
     async deleteBlog(id: string): Promise<boolean>{
-        if (!ObjectId.isValid(id)) {
-            return false
-        }
+
         const blogIndex = await blogsCollection.deleteOne({_id: (new ObjectId (id))})
         return !!blogIndex.deletedCount
     },

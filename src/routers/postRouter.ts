@@ -11,6 +11,7 @@ import {postRepository} from "../repositories/postRepository";
 import {PostInputType} from "../models/postsType";
 import {InputPostsMiddleware} from "../middlewares/inputPostsMiddleware";
 import {postService} from "../domain/postService";
+import {ObjectId} from "mongodb";
 export const postRouter = Router({})
 
 postRouter.get('/', async (req: RequestWithQuery<QueryGetPostsType>, res: Response) => {
@@ -19,6 +20,9 @@ postRouter.get('/', async (req: RequestWithQuery<QueryGetPostsType>, res: Respon
     res.send(posts)
 })
 postRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res: Response) => {
+    if (!ObjectId.isValid(req.params.id)) {
+        res.sendStatus(404)
+    }
     let post = await postService.getPostById(req.params.id)
     if (post) {
         res.send(post)
@@ -31,6 +35,9 @@ postRouter.post('/', authMiddleware, ...InputPostsMiddleware, async (req: Reques
     res.status(201).send(newPost)
 })
 postRouter.delete('/:id', authMiddleware, async (req: RequestWithParams<{ id: string }>, res:Response) => {
+    if (!ObjectId.isValid(req.params.id)) {
+        res.sendStatus(404)
+    }
     const deleteStatus = await postService.deletePost(req.params.id);
     if (!deleteStatus) {
         res.sendStatus(404)
@@ -38,6 +45,9 @@ postRouter.delete('/:id', authMiddleware, async (req: RequestWithParams<{ id: st
     res.sendStatus(204)
 })
 postRouter.put('/:id', authMiddleware, ...InputPostsMiddleware, async (req: RequestWithParamsAndBody<{id: string},PostInputType>, res: Response) => {
+    if (!ObjectId.isValid(req.params.id)) {
+        res.sendStatus(404)
+    }
     const updateStatus = await postService.updatePost(req.params.id ,req.body);
     if (updateStatus) {
         res.sendStatus(404)

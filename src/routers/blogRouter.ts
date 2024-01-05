@@ -13,6 +13,7 @@ import {blogService} from "../domain/blogService";
 import {postService} from "../domain/postService";
 import {InputPostsMiddleware, InputPostsMiddlewareWithoutId} from "../middlewares/inputPostsMiddleware";
 import {PostInputTypeWithoutId} from "../models/postsType";
+import {ObjectId} from "mongodb";
 
 export const blogRouter = Router({})
 
@@ -23,6 +24,9 @@ blogRouter.get('/', async (req: RequestWithQuery<QueryGetBlogsType>, res: Respon
 })
 
 blogRouter.get('/:id/posts', async (req: RequestWithParamsAndQuery<{ id: string }, QueryGetBlogsType>, res: Response) => {
+    if (!ObjectId.isValid(req.params.id)) {
+        res.sendStatus(404)
+    }
     const blog = await blogService.getBlogById(req.params.id)
     if (!blog) {
         res.sendStatus(404)
@@ -33,6 +37,9 @@ blogRouter.get('/:id/posts', async (req: RequestWithParamsAndQuery<{ id: string 
 })
 
 blogRouter.post('/:id/posts', authMiddleware, ...InputPostsMiddlewareWithoutId, async (req: RequestWithParamsAndBody<{id: string}, PostInputTypeWithoutId>, res: Response)=> {
+    if (!ObjectId.isValid(req.params.id)) {
+        res.sendStatus(404)
+    }
     const newPost = await blogService.createPostByBlogId(req.params.id, req.body)
     if (!newPost) {
         res.sendStatus(404)
@@ -40,6 +47,9 @@ blogRouter.post('/:id/posts', authMiddleware, ...InputPostsMiddlewareWithoutId, 
     res.status(201).send(newPost)
 })
 blogRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res: Response) => {
+    if (!ObjectId.isValid(req.params.id)) {
+        res.sendStatus(404)
+    }
     const blog = await blogService.getBlogById(req.params.id)
 
     if (!blog) {
@@ -58,6 +68,9 @@ blogRouter.post('/', authMiddleware, ...InputBlogsMiddleware, async (req: Reques
 
 
 blogRouter.delete('/:id', authMiddleware, async (req: RequestWithParams<{ id: string }>, res:Response) => {
+    if (!ObjectId.isValid(req.params.id)) {
+        res.sendStatus(404)
+    }
     const delStatus = await blogService.deleteBlog(req.params.id)
     if (!delStatus) {
         res.sendStatus(404)
@@ -65,12 +78,15 @@ blogRouter.delete('/:id', authMiddleware, async (req: RequestWithParams<{ id: st
     res.sendStatus(204)
 })
 blogRouter.put('/:id', authMiddleware, ...InputBlogsMiddleware, async (req: RequestWithParamsAndBody<{id: string},BlogInputType>, res: Response) => {
+    if (!ObjectId.isValid(req.params.id)) {
+        res.sendStatus(404)
+    }
     const putStatus = await blogService.updateBlog(req.params.id ,req.body);
     if (!putStatus) {
-        res.sendStatus(204)
+        res.sendStatus(404)
         return
     }
-    res.sendStatus(404)
+    res.sendStatus(204)
 
 })
 
