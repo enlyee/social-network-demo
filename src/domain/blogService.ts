@@ -11,6 +11,7 @@ export const blogService = {
         return await blogRepository.findBlogs(query)
     },
     async getBlogById(id: string): Promise<BlogsOutputType | false> {
+
         return await blogRepository.getBlogById(id)
     },
     async createBlog(blog: BlogInputType): Promise<BlogsOutputType> {

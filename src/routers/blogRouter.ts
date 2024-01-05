@@ -21,6 +21,24 @@ blogRouter.get('/', async (req: RequestWithQuery<QueryGetBlogsType>, res: Respon
     const blogs = await blogService.getBlogs(query)
     res.send(blogs)
 })
+
+blogRouter.get('/:id/posts', async (req: RequestWithParamsAndQuery<{ id: string }, QueryGetBlogsType>, res: Response) => {
+    const blog = await blogService.getBlogById(req.params.id)
+    if (!blog) {
+        res.sendStatus(404)
+        return
+    }
+    let posts = await blogService.findPostsByBlogId(req.params.id, req.query)
+    res.status(200).send(posts)
+})
+
+blogRouter.post('/:id/posts', authMiddleware, ...InputPostsMiddlewareWithoutId, async (req: RequestWithParamsAndBody<{id: string}, PostInputTypeWithoutId>, res: Response)=> {
+    const newPost = await blogService.createPostByBlogId(req.params.id, req.body)
+    if (!newPost) {
+        res.sendStatus(404)
+    }
+    res.status(201).send(newPost)
+})
 blogRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res: Response) => {
     const blog = await blogService.getBlogById(req.params.id)
 
@@ -36,6 +54,9 @@ blogRouter.post('/', authMiddleware, ...InputBlogsMiddleware, async (req: Reques
     res.status(201).send(newBlog)
 
 })
+
+
+
 blogRouter.delete('/:id', authMiddleware, async (req: RequestWithParams<{ id: string }>, res:Response) => {
     const delStatus = await blogService.deleteBlog(req.params.id)
     if (!delStatus) {
@@ -53,26 +74,4 @@ blogRouter.put('/:id', authMiddleware, ...InputBlogsMiddleware, async (req: Requ
 
 })
 
-blogRouter.get('/:id/posts', async (req: RequestWithParamsAndQuery<{ id: string }, QueryGetBlogsType>, res: Response) => {
-    const blog = await blogService.getBlogById(req.params.id)
-    if (!blog) {
-        res.sendStatus(404)
-        return
-    }
-    let posts = await blogService.findPostsByBlogId(req.params.id, req.query)
-    res.status(200).send(posts)
-})
-
-blogRouter.post('/:id/posts', authMiddleware, ...InputPostsMiddlewareWithoutId, async (req: RequestWithParamsAndBody<{id: string}, PostInputTypeWithoutId>, res: Response)=> {
-    const blog = await blogService.getBlogById(req.params.id)
-    if (!blog) {
-        res.sendStatus(404)
-        return
-    }
-    const newPost = await blogService.createPostByBlogId(req.params.id, req.body)
-    if (!newPost) {
-        res.sendStatus(404)
-    }
-    res.status(201).send(newPost)
-})
 
