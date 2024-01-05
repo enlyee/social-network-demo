@@ -34,14 +34,11 @@ export const blogService = {
         return await blogRepository.findPostsByBlogId(id, query)
     },
     async createPostByBlogId(id: string, post: PostInputTypeWithoutId): Promise<PostsOutputType | false>{
-        if (!(await this.getBlogById(id))) {
-            return false
-        }
         const body: PostInputType = {
             ...post,
             blogId: id
         }
-        return postService.createPost(body)
+        return await postService.createPost(body)
     }
 }
 

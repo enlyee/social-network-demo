@@ -43,6 +43,7 @@ postRouter.delete('/:id', authMiddleware, async (req: RequestWithParams<{ id: st
     const deleteStatus = await postService.deletePost(req.params.id);
     if (!deleteStatus) {
         res.sendStatus(404)
+        return
     }
     res.sendStatus(204)
 })
@@ -54,6 +55,7 @@ postRouter.put('/:id', authMiddleware, ...InputPostsMiddleware, async (req: Requ
     const updateStatus = await postService.updatePost(req.params.id ,req.body);
     if (updateStatus) {
         res.sendStatus(404)
+        return
     }
 
     res.sendStatus(204)

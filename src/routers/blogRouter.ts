@@ -41,10 +41,12 @@ blogRouter.post('/:id/posts', authMiddleware, ...InputPostsMiddlewareWithoutId, 
     if (!ObjectId.isValid(req.params.id)) {
         res.sendStatus(404)
         return
+
     }
     const newPost = await blogService.createPostByBlogId(req.params.id, req.body)
     if (!newPost) {
         res.sendStatus(404)
+        return
     }
     res.status(201).send(newPost)
 })
@@ -78,6 +80,7 @@ blogRouter.delete('/:id', authMiddleware, async (req: RequestWithParams<{ id: st
     const delStatus = await blogService.deleteBlog(req.params.id)
     if (!delStatus) {
         res.sendStatus(404)
+        return
     }
     res.sendStatus(204)
 })
