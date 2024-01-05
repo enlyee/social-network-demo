@@ -26,6 +26,7 @@ blogRouter.get('/', async (req: RequestWithQuery<QueryGetBlogsType>, res: Respon
 blogRouter.get('/:id/posts', async (req: RequestWithParamsAndQuery<{ id: string }, QueryGetBlogsType>, res: Response) => {
     if (!ObjectId.isValid(req.params.id)) {
         res.sendStatus(404)
+        return
     }
     const blog = await blogService.getBlogById(req.params.id)
     if (!blog) {
@@ -39,6 +40,7 @@ blogRouter.get('/:id/posts', async (req: RequestWithParamsAndQuery<{ id: string 
 blogRouter.post('/:id/posts', authMiddleware, ...InputPostsMiddlewareWithoutId, async (req: RequestWithParamsAndBody<{id: string}, PostInputTypeWithoutId>, res: Response)=> {
     if (!ObjectId.isValid(req.params.id)) {
         res.sendStatus(404)
+        return
     }
     const newPost = await blogService.createPostByBlogId(req.params.id, req.body)
     if (!newPost) {
@@ -49,6 +51,7 @@ blogRouter.post('/:id/posts', authMiddleware, ...InputPostsMiddlewareWithoutId, 
 blogRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res: Response) => {
     if (!ObjectId.isValid(req.params.id)) {
         res.sendStatus(404)
+        return
     }
     const blog = await blogService.getBlogById(req.params.id)
 
@@ -70,6 +73,7 @@ blogRouter.post('/', authMiddleware, ...InputBlogsMiddleware, async (req: Reques
 blogRouter.delete('/:id', authMiddleware, async (req: RequestWithParams<{ id: string }>, res:Response) => {
     if (!ObjectId.isValid(req.params.id)) {
         res.sendStatus(404)
+        return
     }
     const delStatus = await blogService.deleteBlog(req.params.id)
     if (!delStatus) {
@@ -80,6 +84,7 @@ blogRouter.delete('/:id', authMiddleware, async (req: RequestWithParams<{ id: st
 blogRouter.put('/:id', authMiddleware, ...InputBlogsMiddleware, async (req: RequestWithParamsAndBody<{id: string},BlogInputType>, res: Response) => {
     if (!ObjectId.isValid(req.params.id)) {
         res.sendStatus(404)
+        return
     }
     const putStatus = await blogService.updateBlog(req.params.id ,req.body);
     if (!putStatus) {

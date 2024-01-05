@@ -22,6 +22,7 @@ postRouter.get('/', async (req: RequestWithQuery<QueryGetPostsType>, res: Respon
 postRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res: Response) => {
     if (!ObjectId.isValid(req.params.id)) {
         res.sendStatus(404)
+        return
     }
     let post = await postService.getPostById(req.params.id)
     if (post) {
@@ -37,6 +38,7 @@ postRouter.post('/', authMiddleware, ...InputPostsMiddleware, async (req: Reques
 postRouter.delete('/:id', authMiddleware, async (req: RequestWithParams<{ id: string }>, res:Response) => {
     if (!ObjectId.isValid(req.params.id)) {
         res.sendStatus(404)
+        return
     }
     const deleteStatus = await postService.deletePost(req.params.id);
     if (!deleteStatus) {
@@ -47,6 +49,7 @@ postRouter.delete('/:id', authMiddleware, async (req: RequestWithParams<{ id: st
 postRouter.put('/:id', authMiddleware, ...InputPostsMiddleware, async (req: RequestWithParamsAndBody<{id: string},PostInputType>, res: Response) => {
     if (!ObjectId.isValid(req.params.id)) {
         res.sendStatus(404)
+        return
     }
     const updateStatus = await postService.updatePost(req.params.id ,req.body);
     if (updateStatus) {
