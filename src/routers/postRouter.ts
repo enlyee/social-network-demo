@@ -53,11 +53,10 @@ postRouter.put('/:id', authMiddleware, ...InputPostsMiddleware, async (req: Requ
         return
     }
     const updateStatus = await postService.updatePost(req.params.id ,req.body);
-    if (updateStatus) {
+    if (!updateStatus) {
         res.sendStatus(404)
         return
     }
-
     res.sendStatus(204)
 })
 
