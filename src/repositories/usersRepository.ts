@@ -6,7 +6,7 @@ import {ObjectId} from "mongodb";
 
 export const usersRepository = {
     async findUserByLoginOrEmail(login: string) {
-        return await usersCollection.findOne({$or: [{email: login}, {username: login}]})
+        return await usersCollection.findOne({$or: [{email: login}, {login: login}]})
     },
     async createUser(user: UsersDbType) {
         const newUser = await usersCollection.insertOne(user)
