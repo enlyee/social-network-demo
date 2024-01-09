@@ -15,7 +15,7 @@ usersRouter.get('/', adminAuthMiddleware, async (req: RequestWithQuery<QueryGetU
 
 usersRouter.post('/', adminAuthMiddleware, ...CreatingUserMiddleware, async (req: RequestWithBody<UsersInputType>, res: Response)=> {
     const newUser = await usersService.createUser(req.body.login, req.body.email, req.body.password)
-    res.send(newUser)
+    res.status(201).send(newUser)
 })
 
 usersRouter.delete('/:id', adminAuthMiddleware, async (req: RequestWithParams<{ id: string }>, res: Response) => {

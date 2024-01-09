@@ -12,5 +12,5 @@ authRouter.post('/', InputUserAuthMiddleware, async (req: RequestWithBody<AuthTy
         res.sendStatus(401)
         return
     }
-    res.sendStatus(200)
+    res.sendStatus(204)
 })
