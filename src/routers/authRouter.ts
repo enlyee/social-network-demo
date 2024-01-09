@@ -6,7 +6,7 @@ import {usersService} from "../domain/usersService";
 
 export const authRouter = Router({})
 
-authRouter.post('/', InputUserAuthMiddleware, async (req: RequestWithBody<AuthType>, res: Response) => {
+authRouter.post('/login', InputUserAuthMiddleware, async (req: RequestWithBody<AuthType>, res: Response) => {
     const authStatus = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
     if (!authStatus) {
         res.sendStatus(401)
