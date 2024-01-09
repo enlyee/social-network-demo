@@ -8,7 +8,7 @@ import {
 } from "../models/commonType";
 import {BlogInputType, BlogsOutputType} from "../models/blogsType";
 import {InputBlogsMiddleware} from "../middlewares/inputBlogsMiddleware";
-import {authMiddleware} from "../middlewares/authMiddleware";
+import {adminAuthMiddleware} from "../middlewares/adminAuthMiddleware";
 import {blogService} from "../domain/blogService";
 import {postService} from "../domain/postService";
 import {InputPostsMiddleware, InputPostsMiddlewareWithoutId} from "../middlewares/inputPostsMiddleware";
@@ -37,7 +37,7 @@ blogRouter.get('/:id/posts', async (req: RequestWithParamsAndQuery<{ id: string 
     res.status(200).send(posts)
 })
 
-blogRouter.post('/:id/posts', authMiddleware, ...InputPostsMiddlewareWithoutId, async (req: RequestWithParamsAndBody<{id: string}, PostInputTypeWithoutId>, res: Response)=> {
+blogRouter.post('/:id/posts', adminAuthMiddleware, ...InputPostsMiddlewareWithoutId, async (req: RequestWithParamsAndBody<{id: string}, PostInputTypeWithoutId>, res: Response)=> {
     if (!ObjectId.isValid(req.params.id)) {
         res.sendStatus(404)
         return
@@ -63,7 +63,7 @@ blogRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res: Respo
     }
     res.send(blog)
 })
-blogRouter.post('/', authMiddleware, ...InputBlogsMiddleware, async (req: RequestWithBody<BlogInputType>, res: Response) => {
+blogRouter.post('/', adminAuthMiddleware, ...InputBlogsMiddleware, async (req: RequestWithBody<BlogInputType>, res: Response) => {
 
     const newBlog: BlogsOutputType = await blogService.createBlog(req.body)
     res.status(201).send(newBlog)
@@ -72,7 +72,7 @@ blogRouter.post('/', authMiddleware, ...InputBlogsMiddleware, async (req: Reques
 
 
 
-blogRouter.delete('/:id', authMiddleware, async (req: RequestWithParams<{ id: string }>, res:Response) => {
+blogRouter.delete('/:id', adminAuthMiddleware, async (req: RequestWithParams<{ id: string }>, res:Response) => {
     if (!ObjectId.isValid(req.params.id)) {
         res.sendStatus(404)
         return
@@ -84,7 +84,7 @@ blogRouter.delete('/:id', authMiddleware, async (req: RequestWithParams<{ id: st
     }
     res.sendStatus(204)
 })
-blogRouter.put('/:id', authMiddleware, ...InputBlogsMiddleware, async (req: RequestWithParamsAndBody<{id: string},BlogInputType>, res: Response) => {
+blogRouter.put('/:id', adminAuthMiddleware, ...InputBlogsMiddleware, async (req: RequestWithParamsAndBody<{id: string},BlogInputType>, res: Response) => {
     if (!ObjectId.isValid(req.params.id)) {
         res.sendStatus(404)
         return

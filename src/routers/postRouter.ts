@@ -6,7 +6,7 @@ import {
     RequestWithParamsAndBody,
     RequestWithQuery
 } from "../models/commonType";
-import {authMiddleware} from "../middlewares/authMiddleware";
+import {adminAuthMiddleware} from "../middlewares/adminAuthMiddleware";
 import {postRepository} from "../repositories/postRepository";
 import {PostInputType} from "../models/postsType";
 import {InputPostsMiddleware} from "../middlewares/inputPostsMiddleware";
@@ -31,11 +31,11 @@ postRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res: Respo
         res.sendStatus(404)
     }
 })
-postRouter.post('/', authMiddleware, ...InputPostsMiddleware, async (req: RequestWithBody<PostInputType>, res: Response) => {
+postRouter.post('/', adminAuthMiddleware, ...InputPostsMiddleware, async (req: RequestWithBody<PostInputType>, res: Response) => {
     const newPost = await postService.createPost(req.body)
     res.status(201).send(newPost)
 })
-postRouter.delete('/:id', authMiddleware, async (req: RequestWithParams<{ id: string }>, res:Response) => {
+postRouter.delete('/:id', adminAuthMiddleware, async (req: RequestWithParams<{ id: string }>, res:Response) => {
     if (!ObjectId.isValid(req.params.id)) {
         res.sendStatus(404)
         return
@@ -47,7 +47,7 @@ postRouter.delete('/:id', authMiddleware, async (req: RequestWithParams<{ id: st
     }
     res.sendStatus(204)
 })
-postRouter.put('/:id', authMiddleware, ...InputPostsMiddleware, async (req: RequestWithParamsAndBody<{id: string},PostInputType>, res: Response) => {
+postRouter.put('/:id', adminAuthMiddleware, ...InputPostsMiddleware, async (req: RequestWithParamsAndBody<{id: string},PostInputType>, res: Response) => {
     if (!ObjectId.isValid(req.params.id)) {
         res.sendStatus(404)
         return

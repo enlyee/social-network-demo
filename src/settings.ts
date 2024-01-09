@@ -2,6 +2,8 @@ import express, {Request, Response} from "express";
 import {blogRouter} from "./routers/blogRouter";
 import {postRouter} from "./routers/postRouter";
 import {blogsCollection, postsCollection} from "./db/runDb";
+import {authRouter} from "./routers/authRouter";
+import {usersRouter} from "./routers/usersRouter";
 
 export const app = express()
 
@@ -14,3 +16,5 @@ app.delete("/testing/all-data", async (req: Request, res: Response) => {
 });
 app.use("/blogs", blogRouter)
 app.use("/posts", postRouter)
+app.use('/auth', authRouter)
+app.use('/users', usersRouter)

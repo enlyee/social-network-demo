@@ -4,7 +4,7 @@ import {
     postContentValidator,
     postDescriptionValidator,
     postTitleValidator
-} from "../validators/blogs/postValidator";
+} from "../validators/postValidator";
 
 export const InputPostsMiddleware = [postBlogIdIsExists, postTitleValidator, postDescriptionValidator, postContentValidator, inputMiddleware]
 export const InputPostsMiddlewareWithoutId = [postTitleValidator, postDescriptionValidator, postContentValidator, inputMiddleware]

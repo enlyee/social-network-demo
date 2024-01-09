@@ -20,3 +20,17 @@ export type QueryGetPostsType = {
     pageNumber?: number,
     pageSize?: number
 }
+
+export type QueryGetUsersType = {
+    searchLoginTerm?: string,
+    searchEmailTerm?: string,
+    sortBy?: string,
+    sortDirection?: 'asc' | 'desc',
+    pageNumber?: number,
+    pageSize?: number
+}
+
+export type AuthType = {
+    loginOrEmail: string,
+    password: string
+}
