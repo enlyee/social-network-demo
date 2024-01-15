@@ -1,9 +1,10 @@
 import {Request, Response, Router} from "express";
 import {
+    QueryGetCommentsType,
     QueryGetPostsType,
     RequestWithBody,
     RequestWithParams,
-    RequestWithParamsAndBody,
+    RequestWithParamsAndBody, RequestWithParamsAndQuery,
     RequestWithQuery
 } from "../models/commonType";
 import {adminAuthMiddleware} from "../middlewares/adminAuthMiddleware";
@@ -12,6 +13,9 @@ import {PostInputType} from "../models/postsType";
 import {InputPostsMiddleware} from "../middlewares/inputPostsMiddleware";
 import {postService} from "../domain/postService";
 import {ObjectId} from "mongodb";
+import {commentsService} from "../domain/commentsService";
+import {UserAuthMiddleware} from "../middlewares/userAuthMiddleware";
+import {UpdateCommentsMiddleware} from "../middlewares/inputCommentsMiddleware";
 export const postRouter = Router({})
 
 postRouter.get('/', async (req: RequestWithQuery<QueryGetPostsType>, res: Response) => {
@@ -58,5 +62,25 @@ postRouter.put('/:id', adminAuthMiddleware, ...InputPostsMiddleware, async (req:
         return
     }
     res.sendStatus(204)
+})
+
+postRouter.get('/:postId/comments', async (req: RequestWithParamsAndQuery<{ postId: string }, QueryGetCommentsType>, res: Response) =>{
+    const isExist = await postService.getPostById(req.params.postId)
+    if (!isExist) {
+        res.sendStatus(404)
+        return
+    }
+    const comments = await commentsService.getComments(req.params.postId, req.query)
+    res.send(comments)
+})
+
+postRouter.post('/:postId/comments', UserAuthMiddleware, ...UpdateCommentsMiddleware, async (req: RequestWithParamsAndBody<{ postId: string }, {content: string}>, res: Response)=>{
+    const isExist = await postService.getPostById(req.params.postId)
+    if (!isExist) {
+        res.sendStatus(404)
+        return
+    }
+    const comment = await commentsService.postComment(req.params.postId, req.body.content, req.userId!)
+    res.status(201).send(comment)
 })
 

@@ -1,7 +1,7 @@
 import {NextFunction, Request, Response} from "express";
 import {ValidationError, validationResult} from "express-validator";
 
-export const inputMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const errorThrower = (req: Request, res: Response, next: NextFunction) => {
 
     const err = validationResult(req).formatWith((error: ValidationError) => {
         switch (error.type) {

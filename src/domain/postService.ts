@@ -11,6 +11,9 @@ export const postService = {
         return await postRepository.getPosts(query)
     },
     async getPostById(id: string): Promise<PostsOutputType | false> {
+        if (!ObjectId.isValid(id)) {
+            return false
+        }
         return await postRepository.getPostById(id)
     },
     async createPost(post: PostInputType): Promise<PostsOutputType | false> {

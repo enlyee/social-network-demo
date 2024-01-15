@@ -3,7 +3,7 @@ import {adminAuthMiddleware} from "../middlewares/adminAuthMiddleware";
 import {QueryGetUsersType, RequestWithBody, RequestWithParams, RequestWithQuery} from "../models/commonType";
 import {usersService} from "../domain/usersService";
 import {UsersInputType} from "../models/usersTypes";
-import {CreatingUserMiddleware} from "../middlewares/inputUserMiddleware";
+import {RegistrationUserMiddleware} from "../middlewares/registrationUserMiddleware";
 
 export const usersRouter = Router({})
 
@@ -13,7 +13,7 @@ usersRouter.get('/', adminAuthMiddleware, async (req: RequestWithQuery<QueryGetU
     res.send(users)
 })
 
-usersRouter.post('/', adminAuthMiddleware, ...CreatingUserMiddleware, async (req: RequestWithBody<UsersInputType>, res: Response)=> {
+usersRouter.post('/', adminAuthMiddleware, ...RegistrationUserMiddleware, async (req: RequestWithBody<UsersInputType>, res: Response)=> {
     const newUser = await usersService.createUser(req.body.login, req.body.email, req.body.password)
     res.status(201).send(newUser)
 })

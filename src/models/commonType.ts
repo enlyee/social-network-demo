@@ -30,6 +30,13 @@ export type QueryGetUsersType = {
     pageSize?: number
 }
 
+export type QueryGetCommentsType = {
+    sortBy?: string,
+    sortDirection?: 'asc' | 'desc',
+    pageNumber?: number,
+    pageSize?: number
+}
+
 export type AuthType = {
     loginOrEmail: string,
     password: string

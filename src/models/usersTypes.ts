@@ -27,3 +27,9 @@ export type FindParamsUsersType = {
     pageNumber: number,
     pageSize: number
 }
+
+export type UserMeType = {
+    email: string,
+    login: string,
+    userId: string
+}

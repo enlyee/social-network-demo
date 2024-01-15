@@ -1,10 +1,11 @@
 import bcrypt, {hash} from 'bcryptjs'
 import {usersRepository} from "../repositories/usersRepository";
 import {QueryGetUsersType} from "../models/commonType";
-import {FindParamsUsersType, UsersDbType} from "../models/usersTypes";
+import {FindParamsUsersType, UserMeType, UsersDbType} from "../models/usersTypes";
 import {blogsCollection} from "../db/runDb";
 import {BlogMapper} from "../models/mappers/blogsMapper";
-import {UsersMapper} from "../models/mappers/usersMapper";
+import {UsersFindManyMapper, UsersFindMeMapper} from "../models/mappers/usersMapper";
+import {jwtService} from "../application/jwtService";
 const sortingUsersName = ['login', 'email', 'createdAt']
 export const usersService = {
     async findUsers(query: QueryGetUsersType){
@@ -24,7 +25,7 @@ export const usersService = {
             page: +findParams.pageNumber,
             pageSize: +findParams.pageSize,
             totalCount: collectionSize,
-            items: users.map(UsersMapper)
+            items: users.map(UsersFindManyMapper)
         }
     },
     async createUser(login: string, email: string, password: string) {
@@ -39,7 +40,7 @@ export const usersService = {
         }
         return await usersRepository.createUser(user)
     },
-    async checkCredentials(login: string, password: string): Promise<boolean>{
+    async checkCredentials(login: string, password: string){
         const user = await usersRepository.findUserByLoginOrEmail(login)
 
         if (!user) {
@@ -47,8 +48,11 @@ export const usersService = {
         }
 
         const passwordHash = await this._generateHash(password, user.passwordSalt)
-        console.log(user.passwordHash, passwordHash)
-        return user.passwordHash === passwordHash;
+        if (user.passwordHash === passwordHash) {
+            return user._id.toString()
+        } else {
+            return false
+        }
 
     },
     async _generateHash(password: string, salt: string): Promise<string> {
@@ -56,5 +60,9 @@ export const usersService = {
     },
     async deleteUser(id: string) {
         return await usersRepository.deleteUser(id)
+    },
+    async findUserById(userId: string): Promise<UserMeType> {
+        const user: any = await usersRepository.findUserById(userId)
+        return UsersFindMeMapper(user)
     }
 }

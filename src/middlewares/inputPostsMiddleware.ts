@@ -1,4 +1,4 @@
-import {inputMiddleware} from "../validators/inputMiddleware";
+import {errorThrower} from "../validators/errorThrower";
 import {
     postBlogIdIsExists,
     postContentValidator,
@@ -6,5 +6,5 @@ import {
     postTitleValidator
 } from "../validators/postValidator";
 
-export const InputPostsMiddleware = [postBlogIdIsExists, postTitleValidator, postDescriptionValidator, postContentValidator, inputMiddleware]
-export const InputPostsMiddlewareWithoutId = [postTitleValidator, postDescriptionValidator, postContentValidator, inputMiddleware]
+export const InputPostsMiddleware = [postBlogIdIsExists, postTitleValidator, postDescriptionValidator, postContentValidator, errorThrower]
+export const InputPostsMiddlewareWithoutId = [postTitleValidator, postDescriptionValidator, postContentValidator, errorThrower]

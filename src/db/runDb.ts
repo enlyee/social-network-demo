@@ -3,6 +3,7 @@ import {PostsDbType} from "../models/postsType";
 import {BlogsDbType} from "../models/blogsType";
 import dotenv from 'dotenv'
 import {UsersDbType} from "../models/usersTypes";
+import {CommentsDbType} from "../models/commentsTypes";
 dotenv.config()
 
 
@@ -10,9 +11,11 @@ const url = process.env.MONGO_URL || 'mongodb://0.0.0.0:27017'
 console.log('url: ', url)
 const client = new MongoClient(url)
 
-export const postsCollection = client.db().collection<PostsDbType>('posts');
-export const blogsCollection = client.db().collection<BlogsDbType>('blogs');
-export const usersCollection = client.db().collection<UsersDbType>('users');
+export const postsCollection = client.db().collection<PostsDbType>('posts')
+export const blogsCollection = client.db().collection<BlogsDbType>('blogs')
+export const usersCollection = client.db().collection<UsersDbType>('users')
+
+export const commentsCollection = client.db().collection<CommentsDbType>('comments')
 
 export async function runDb() {
     try {
