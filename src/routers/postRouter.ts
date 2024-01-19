@@ -52,10 +52,7 @@ postRouter.delete('/:id', adminAuthMiddleware, async (req: RequestWithParams<{ i
     res.sendStatus(204)
 })
 postRouter.put('/:id', adminAuthMiddleware, ...InputPostsMiddleware, async (req: RequestWithParamsAndBody<{id: string},PostInputType>, res: Response) => {
-    if (!ObjectId.isValid(req.params.id)) {
-        res.sendStatus(404)
-        return
-    }
+
     const updateStatus = await postService.updatePost(req.params.id ,req.body);
     if (!updateStatus) {
         res.sendStatus(404)
@@ -65,22 +62,29 @@ postRouter.put('/:id', adminAuthMiddleware, ...InputPostsMiddleware, async (req:
 })
 
 postRouter.get('/:postId/comments', async (req: RequestWithParamsAndQuery<{ postId: string }, QueryGetCommentsType>, res: Response) =>{
-    const isExist = await postService.getPostById(req.params.postId)
-    if (!isExist) {
-        res.sendStatus(404)
-        return
-    }
     const comments = await commentsService.getComments(req.params.postId, req.query)
-    res.send(comments)
+    switch (comments){
+        case 404: {
+            res.sendStatus(404)
+            break
+        }
+        default: {
+            res.send(comments)
+        }
+    }
 })
 
 postRouter.post('/:postId/comments', UserAuthMiddleware, ...UpdateCommentsMiddleware, async (req: RequestWithParamsAndBody<{ postId: string }, {content: string}>, res: Response)=>{
-    const isExist = await postService.getPostById(req.params.postId)
-    if (!isExist) {
-        res.sendStatus(404)
-        return
-    }
     const comment = await commentsService.postComment(req.params.postId, req.body.content, req.userId!)
-    res.status(201).send(comment)
+    switch (comment) {
+        case 404: {
+            res.sendStatus(404)
+            break
+        }
+        default: {
+            res.status(201).send(comment)
+        }
+
+    }
 })
 

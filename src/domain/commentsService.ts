@@ -7,6 +7,7 @@ import {QueryGetCommentsType} from "../models/commonType";
 import {CommentsDbType, CommentsDtoType, FindParamsCommentsType} from "../models/commentsTypes";
 import {CommentsMapper} from "../models/mappers/commentsMapper";
 import {usersService} from "./usersService";
+import {postService} from "./postService";
 const sortingCommentsName = ['createdAt', 'id']
 
 export const commentsService = {
@@ -20,7 +21,15 @@ export const commentsService = {
         }
         return CommentsMapper(comment)
     },
-    async deleteCommentById(commentId: string){
+    async deleteCommentById(commentId: string, userId: string){
+        const comment = await this.getCommentById(commentId)
+        if (!comment) {
+            return 404
+        }
+        const isOwner = comment.commentatorInfo.userId === userId
+        if (!isOwner){
+            return 403
+        }
         const status = await commentsRepository.deleteCommentById(commentId)
         return status
     },
@@ -28,11 +37,23 @@ export const commentsService = {
         const comment: any = await commentsRepository.getCommentById(commentId)
         return userId === comment.commentatorInfo.userId
     },
-    async updateCommentById(commentId: string, content: string){
+    async updateCommentById(commentId: string, content: string, userId: string){
+        const comment = await this.getCommentById(commentId)
+        if (!comment) {
+            return 404
+        }
+        const isOwner = comment.commentatorInfo.userId === userId
+        if (!isOwner){
+            return 403
+        }
         const status = await commentsRepository.updateCommentById(commentId, content)
         return status
     },
     async getComments(postId: string, query: QueryGetCommentsType) {
+        const isExist = await postService.getPostById(postId) //&& ObjectId.isValid(postId)
+        if (!isExist) {
+            return 404
+        }
         const findParams: FindParamsCommentsType = {
             sortBy: (query.sortBy) ? (sortingCommentsName.includes(query.sortBy)) ? (query.sortBy) : 'createdAt' : 'createdAt',
             sortDirection: query.sortDirection || 'desc',
@@ -52,6 +73,10 @@ export const commentsService = {
         }
     },
     async postComment(postId: string, content: string, userId: string){
+        const isExist = await postService.getPostById(postId)
+        if (!isExist) {
+            return 404
+        }
         const userLogin = await usersService.findUserById(userId)
         const comment: CommentsDbType = {
             content: content,

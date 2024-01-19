@@ -8,48 +8,42 @@ export const commentsRouter = Router({})
 
 commentsRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res: Response) => {
     const comment = await commentsService.getCommentById(req.params.id)
-    if (!comment) {
-        res.sendStatus(404)
-        return
+    switch (comment) {
+        case false: {
+            res.sendStatus(404)
+            break
+        }
+        default: {
+            res.send(comment)
+        }
     }
-    res.send(comment)
+
 })
 
 commentsRouter.delete('/:id', UserAuthMiddleware, async (req: RequestWithParams<{ id: string }>, res: Response) => {
-    const isExist = await commentsService.getCommentById(req.params.id)
-    if (!isExist) {
-        res.sendStatus(404)
-        return
+    const result = await commentsService.deleteCommentById(req.params.id, req.userId!)
+    switch (result) {
+        case 404 | 403: {
+            res.sendStatus(result)
+            break
+        }
+        default: {
+            res.status(204)
+        }
     }
-    const isOwner = await commentsService.checkCommentOwner(req.params.id, req.userId!);
-    if (!isOwner){
-        res.sendStatus(403)
-        return
-    }
-    const status = await commentsService.deleteCommentById(req.params.id)
-    if (!status) {
-        res.sendStatus(404)
-        return
-    }
-    res.sendStatus(204)
+
 })
 
 commentsRouter.put('/:id', UserAuthMiddleware, ...UpdateCommentsMiddleware, async (req: RequestWithParamsAndBody<{ id: string }, {content: string}>, res: Response) => {
-    const isExist = await commentsService.getCommentById(req.params.id)
-    if (!isExist) {
-        res.sendStatus(404)
-        return
+    const result = await commentsService.updateCommentById(req.params.id, req.body.content, req.userId!)
+    switch (result) {
+        case 404 | 403: {
+            res.sendStatus(result)
+            break
+        }
+        default: {
+            res.status(204)
+        }
     }
-    const isOwner = await commentsService.checkCommentOwner(req.params.id, req.userId!);
-    if (!isOwner){
-        res.sendStatus(403)
-        return
-    }
-    const status = await commentsService.updateCommentById(req.params.id, req.body.content)
-    if (!status) {
-        res.sendStatus(404)
-        return
-    }
-    res.sendStatus(204)
 })
 
