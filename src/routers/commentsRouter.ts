@@ -9,13 +9,12 @@ export const commentsRouter = Router({})
 commentsRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res: Response) => {
     const comment = await commentsService.getCommentById(req.params.id)
     switch (comment) {
-        case false: {
+        case false:
             res.sendStatus(404)
             break
-        }
-        default: {
+        default:
             res.send(comment)
-        }
+
     }
 
 })
@@ -23,13 +22,12 @@ commentsRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res: R
 commentsRouter.delete('/:id', UserAuthMiddleware, async (req: RequestWithParams<{ id: string }>, res: Response) => {
     const result = await commentsService.deleteCommentById(req.params.id, req.userId!)
     switch (result) {
-        case 404 | 403: {
+        case 404 | 403:
             res.sendStatus(result)
             break
-        }
-        default: {
+        default:
             res.status(204)
-        }
+
     }
 
 })
@@ -37,13 +35,12 @@ commentsRouter.delete('/:id', UserAuthMiddleware, async (req: RequestWithParams<
 commentsRouter.put('/:id', UserAuthMiddleware, ...UpdateCommentsMiddleware, async (req: RequestWithParamsAndBody<{ id: string }, {content: string}>, res: Response) => {
     const result = await commentsService.updateCommentById(req.params.id, req.body.content, req.userId!)
     switch (result) {
-        case 404 | 403: {
+        case 404 | 403:
             res.sendStatus(result)
             break
-        }
-        default: {
+        default:
             res.status(204)
-        }
+
     }
 })
 
