@@ -22,7 +22,8 @@ commentsRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res: R
 commentsRouter.delete('/:id', UserAuthMiddleware, async (req: RequestWithParams<{ id: string }>, res: Response) => {
     const result = await commentsService.deleteCommentById(req.params.id, req.userId!)
     switch (result) {
-        case 404 | 403:
+        case 404:
+        case 403:
             res.sendStatus(result)
             break
         default:
@@ -35,7 +36,8 @@ commentsRouter.delete('/:id', UserAuthMiddleware, async (req: RequestWithParams<
 commentsRouter.put('/:id', UserAuthMiddleware, ...UpdateCommentsMiddleware, async (req: RequestWithParamsAndBody<{ id: string }, {content: string}>, res: Response) => {
     const result = await commentsService.updateCommentById(req.params.id, req.body.content, req.userId!)
     switch (result) {
-        case 404 | 403:
+        case 404:
+        case 403:
             res.sendStatus(result)
             break
 
