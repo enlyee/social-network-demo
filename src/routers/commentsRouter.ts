@@ -38,6 +38,7 @@ commentsRouter.put('/:id', UserAuthMiddleware, ...UpdateCommentsMiddleware, asyn
         case 404 | 403:
             res.sendStatus(result)
             break
+
         default:
             res.status(204)
 
