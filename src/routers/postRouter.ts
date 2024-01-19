@@ -64,26 +64,22 @@ postRouter.put('/:id', adminAuthMiddleware, ...InputPostsMiddleware, async (req:
 postRouter.get('/:postId/comments', async (req: RequestWithParamsAndQuery<{ postId: string }, QueryGetCommentsType>, res: Response) =>{
     const comments = await commentsService.getComments(req.params.postId, req.query)
     switch (comments){
-        case 404: {
+        case 404:
             res.sendStatus(404)
             break
-        }
-        default: {
+        default:
             res.send(comments)
-        }
     }
 })
 
 postRouter.post('/:postId/comments', UserAuthMiddleware, ...UpdateCommentsMiddleware, async (req: RequestWithParamsAndBody<{ postId: string }, {content: string}>, res: Response)=>{
     const comment = await commentsService.postComment(req.params.postId, req.body.content, req.userId!)
     switch (comment) {
-        case 404: {
+        case 404:
             res.sendStatus(404)
             break
-        }
-        default: {
+        default:
             res.status(201).send(comment)
-        }
 
     }
 })

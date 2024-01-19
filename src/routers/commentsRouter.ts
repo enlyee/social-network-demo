@@ -27,7 +27,7 @@ commentsRouter.delete('/:id', UserAuthMiddleware, async (req: RequestWithParams<
             res.sendStatus(result)
             break
         default:
-            res.status(204)
+            res.sendStatus(204)
 
     }
 
@@ -42,7 +42,7 @@ commentsRouter.put('/:id', UserAuthMiddleware, ...UpdateCommentsMiddleware, asyn
             break
 
         default:
-            res.status(204)
+            res.sendStatus(204)
 
     }
 })
