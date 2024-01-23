@@ -11,7 +11,7 @@ import {UsersInputType} from "../models/usersTypes";
 import {authService} from "../domain/authService";
 import {RegistrationUserMiddleware} from "../middlewares/registrationUserMiddleware";
 import {EmailConfirmationCodeMiddleware} from "../middlewares/confirmationEmailMiddleware";
-import {emailMiddleware} from "../middlewares/emailMiddleware";
+import {emailResendingMiddleware} from "../middlewares/emailResendingMiddleware";
 
 export const authRouter = Router({})
 
@@ -43,7 +43,7 @@ authRouter.post('/registration-confirmation', EmailConfirmationCodeMiddleware, a
     res.sendStatus(204)
 })
 
-authRouter.post('/registration-email-resending', emailMiddleware, async (req: RequestWithBody<{ email: string }>, res: Response) =>{
+authRouter.post('/registration-email-resending', emailResendingMiddleware, async (req: RequestWithBody<{ email: string }>, res: Response) =>{
     await authService.resendEmail(req.body.email)
     res.sendStatus(204)
 })
