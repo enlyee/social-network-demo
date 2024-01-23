@@ -20,9 +20,14 @@ export const authRepository = {
         await usersCollection.updateOne({_id: new ObjectId(userId)}, {$set: {isConfirmed: true}})
     },
     async getUserConfirmationStatusByEmail(email: string) {
-        return (await usersCollection.findOne({email: email}))?.isConfirmed
+        const user = await usersCollection.findOne({email: email})
+        if (!user) {
+            return 'notExist'
+        }
+        return user.isConfirmed
     },
     async getUserIdByEmail(email: string) {
-        return (await usersCollection.findOne({email: email}))?._id.toString()
+        const user = await usersCollection.findOne({email: email})
+        return user?._id.toString()
     }
 }

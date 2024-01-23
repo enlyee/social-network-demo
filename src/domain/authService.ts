@@ -42,7 +42,7 @@ export const authService = {
             userId: userID,
             confirmationCode: uuidv4(),
             expirationDate: add(new Date(), {
-                minutes: 1
+                minutes: 3
             }),
         }
         await authRepository.createConfirmation(emailConfirmationData)
@@ -55,12 +55,12 @@ export const authService = {
     },
     async resendEmail(email: string) {
         const userId = await authRepository.getUserIdByEmail(email)
-        await authRepository.deleteConfirmationByCode(userId!)
+        await authRepository.deleteConfirmationByUserId(userId!)
         const emailConfirmationData: EmailConfirmationType = {
             userId: userId!,
             confirmationCode: uuidv4(),
             expirationDate: add(new Date(), {
-                minutes: 1
+                minutes: 3
             }),
         }
         await authRepository.createConfirmation(emailConfirmationData)
