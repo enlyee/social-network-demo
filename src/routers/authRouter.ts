@@ -44,6 +44,7 @@ authRouter.post('/registration-confirmation', ...EmailConfirmationCodeMiddleware
 })
 
 authRouter.post('/registration-email-resending', ...emailResendingMiddleware, async (req: RequestWithBody<{ email: string }>, res: Response) =>{
+    console.log('start')
     await authService.resendEmail(req.body.email)
     res.sendStatus(204)
 })

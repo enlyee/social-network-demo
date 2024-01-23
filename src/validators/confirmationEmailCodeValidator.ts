@@ -8,7 +8,7 @@ export const confirmationEmailCodeValidator = body('code').custom(async (code)=>
     }
     return true
 })
-export const confirmationEmailValidator = body('email').matches('^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').custom(async (email)=>{
+export const confirmationEmailValidator = body('email').matches('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$').custom(async (email)=>{
     const confirmation = await authRepository.getUserConfirmationStatusByEmail(email)
     if ( confirmation !== false ) {
         throw new Error('Email is not registered yet, incorrect or already been confirmed')
