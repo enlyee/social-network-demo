@@ -1,11 +1,14 @@
 "use strict";
-const nodemailer = require("nodemailer");
+import nodemailer from "nodemailer";
+import dotenv from "dotenv";
+dotenv.config()
 
 const transporter = nodemailer.createTransport({
+
     service: 'gmail',
     auth: {
-        user: "backendtest228@gmail.com",
-        pass: "awjm cghm cqss emeo",
+        user: process.env.EMAIL_LOGIN,
+        pass: process.env.EMAIL_PASS,
     },
 });
 
