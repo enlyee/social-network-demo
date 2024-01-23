@@ -1,4 +1,4 @@
 import {errorThrower} from "../validators/errorThrower";
-import {confirmationEmailCodeValidator} from "../validators/confirmationEmailCodeValidator";
+import {confirmationEmailCodeValidator, confirmationEmailValidator} from "../validators/confirmationEmailCodeValidator";
 
-export const emailResendingMiddleware = [confirmationEmailCodeValidator, errorThrower]
+export const emailResendingMiddleware = [confirmationEmailValidator, errorThrower]

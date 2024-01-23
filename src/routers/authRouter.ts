@@ -38,12 +38,12 @@ authRouter.post('/registration', ...RegistrationUserMiddleware, async (req: Requ
     res.sendStatus(204)
 })
 
-authRouter.post('/registration-confirmation', EmailConfirmationCodeMiddleware, async (req: RequestWithBody<{ code: string }>, res: Response)=>{
+authRouter.post('/registration-confirmation', ...EmailConfirmationCodeMiddleware, async (req: RequestWithBody<{ code: string }>, res: Response)=>{
     await authService.emailConfirmation(req.body.code)
     res.sendStatus(204)
 })
 
-authRouter.post('/registration-email-resending', emailResendingMiddleware, async (req: RequestWithBody<{ email: string }>, res: Response) =>{
+authRouter.post('/registration-email-resending', ...emailResendingMiddleware, async (req: RequestWithBody<{ email: string }>, res: Response) =>{
     await authService.resendEmail(req.body.email)
     res.sendStatus(204)
 })
