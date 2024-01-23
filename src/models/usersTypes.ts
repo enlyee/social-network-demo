@@ -3,7 +3,14 @@ export type UsersDbType = {
     email: string,
     passwordHash: string,
     passwordSalt: string,
+    isConfirmed: boolean,
     createdAt: string
+}
+
+export type EmailConfirmationType = {
+    userId: string,
+    confirmationCode: string,
+    expirationDate: Date
 }
 
 export type UsersOutputType = {

@@ -1,11 +1,14 @@
 import bcrypt, {hash} from 'bcryptjs'
 import {usersRepository} from "../repositories/usersRepository";
 import {QueryGetUsersType} from "../models/commonType";
-import {FindParamsUsersType, UserMeType, UsersDbType} from "../models/usersTypes";
+import {EmailConfirmationType, FindParamsUsersType, UserMeType, UsersDbType} from "../models/usersTypes";
 import {blogsCollection} from "../db/runDb";
 import {BlogMapper} from "../models/mappers/blogsMapper";
 import {UsersFindManyMapper, UsersFindMeMapper} from "../models/mappers/usersMapper";
 import {jwtService} from "../application/jwtService";
+import {authService} from "./authService";
+import {v4 as uuidv4} from "uuid";
+import {add} from "date-fns/add";
 const sortingUsersName = ['login', 'email', 'createdAt']
 export const usersService = {
     async findUsers(query: QueryGetUsersType){
@@ -30,33 +33,16 @@ export const usersService = {
     },
     async createUser(login: string, email: string, password: string) {
         const passwordSalt = await bcrypt.genSalt(10)
-        const passwordHash = await this._generateHash(password, passwordSalt)
+        const passwordHash = await authService.generateHash(password, passwordSalt)
         const user: UsersDbType = {
             login: login,
             email: email,
             passwordHash: passwordHash,
             passwordSalt: passwordSalt,
-            createdAt: (new Date()).toISOString()
+            createdAt: (new Date()).toISOString(),
+            isConfirmed: true
         }
         return await usersRepository.createUser(user)
-    },
-    async checkCredentials(login: string, password: string){
-        const user = await usersRepository.findUserByLoginOrEmail(login)
-
-        if (!user) {
-            return false
-        }
-
-        const passwordHash = await this._generateHash(password, user.passwordSalt)
-        if (user.passwordHash === passwordHash) {
-            return user._id.toString()
-        } else {
-            return false
-        }
-
-    },
-    async _generateHash(password: string, salt: string): Promise<string> {
-        return await bcrypt.hash(password, salt)
     },
     async deleteUser(id: string) {
         return await usersRepository.deleteUser(id)

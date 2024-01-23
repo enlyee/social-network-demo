@@ -2,7 +2,7 @@ import {MongoClient} from "mongodb";
 import {PostsDbType} from "../models/postsType";
 import {BlogsDbType} from "../models/blogsType";
 import dotenv from 'dotenv'
-import {UsersDbType} from "../models/usersTypes";
+import {EmailConfirmationType, UsersDbType} from "../models/usersTypes";
 import {CommentsDbType} from "../models/commentsTypes";
 dotenv.config()
 
@@ -16,6 +16,8 @@ export const blogsCollection = client.db().collection<BlogsDbType>('blogs')
 export const usersCollection = client.db().collection<UsersDbType>('users')
 
 export const commentsCollection = client.db().collection<CommentsDbType>('comments')
+
+export const emailConfirmationCollection = client.db().collection<EmailConfirmationType>('emailconfirmations')
 
 export async function runDb() {
     try {
