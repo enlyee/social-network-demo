@@ -18,7 +18,7 @@ export const usersCollection = client.db().collection<UsersDbType>('users')
 export const commentsCollection = client.db().collection<CommentsDbType>('comments')
 
 export const emailConfirmationCollection = client.db().collection<EmailConfirmationType>('emailconfirmations')
-
+export const tokensBlackListCollection = client.db().collection<{token: string}>('tokensBlackList')
 export async function runDb() {
     try {
         // Connect the client to the server	(optional starting in v4.7)

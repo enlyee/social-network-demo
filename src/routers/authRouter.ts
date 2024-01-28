@@ -21,8 +21,9 @@ authRouter.post('/login', LoginUserMiddleware, async (req: RequestWithBody<AuthT
         res.sendStatus(401)
         return
     }
-
-    const token = await jwtService.createJwt(userId)
+    const refreshToken = await jwtService.createJwtRefreshToken(userId)
+    res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true,})
+    const token = await jwtService.createJwtAccessToken(userId, refreshToken)
     res.status(200).send({
         "accessToken": token
     })
@@ -44,8 +45,40 @@ authRouter.post('/registration-confirmation', ...EmailConfirmationCodeMiddleware
 })
 
 authRouter.post('/registration-email-resending', ...emailResendingMiddleware, async (req: RequestWithBody<{ email: string }>, res: Response) =>{
-    console.log('start')
     await authService.resendEmail(req.body.email)
     res.sendStatus(204)
 })
+
+authRouter.post('/refresh-token', async (req: Request, res: Response) =>{
+    const oldToken = req.cookies.refreshToken
+    const userId = await jwtService.getUserIdByToken(oldToken)
+    if (!userId) {
+        res.sendStatus(401)
+        return
+    }
+    const token = await jwtService.createJwtAccessToken(userId, oldToken)
+    if (!token) {
+        res.sendStatus(401)
+        return
+    }
+    await jwtService.addTokenToBlackList(oldToken)
+    const refreshToken = await jwtService.createJwtRefreshToken(userId)
+    res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true,})
+
+    res.status(200).send({
+        "accessToken": token
+    })
+})
+
+authRouter.post('/logout', async (req: Request, res: Response) => {
+    const oldToken = req.cookies.refreshToken
+    const userId = await jwtService.getUserIdByToken(oldToken)
+    if (!userId) {
+        res.sendStatus(401)
+        return
+    }
+    await jwtService.addTokenToBlackList(oldToken)
+    res.sendStatus(204)
+})
+
 
