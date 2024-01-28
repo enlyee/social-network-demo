@@ -8,12 +8,16 @@ const JWT_SECRET = process.env.JWT_SECRET || "123"
 
 export const jwtService = {
     async createJwtAccessToken(userId: string, refreshToken: string) {
-        const status = await tokenRepository.checkTokenInBlackList(refreshToken)
-        if (status) {
+        const inBlackList = await this.checkRefreshTokenInBlackList(refreshToken)
+        if (inBlackList) {
             return null
         }
         const token = jwt.sign({userId: userId}, JWT_SECRET, {expiresIn: "10sec"})
         return token
+    },
+    async checkRefreshTokenInBlackList(token: string){
+        const status = await tokenRepository.checkTokenInBlackList(token)
+        return status
     },
     async createJwtRefreshToken(userId: string) {
         const token = jwt.sign({userId: userId}, JWT_SECRET, {expiresIn: "20sec"})

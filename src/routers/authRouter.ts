@@ -77,6 +77,11 @@ authRouter.post('/logout', async (req: Request, res: Response) => {
         res.sendStatus(401)
         return
     }
+    const inBlockList = await jwtService.checkRefreshTokenInBlackList(oldToken)
+    if (inBlockList) {
+        res.sendStatus(401)
+        return
+    }
     await jwtService.addTokenToBlackList(oldToken)
     res.sendStatus(204)
 })
