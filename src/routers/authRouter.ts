@@ -1,5 +1,3 @@
-//kznj umsc pgvk mlyb
-
 import {Router} from "express";
 import {Request, Response} from "express";
 import {AuthType, RequestWithBody} from "../models/commonType";
@@ -12,10 +10,11 @@ import {authService} from "../domain/authService";
 import {RegistrationUserMiddleware} from "../middlewares/registrationUserMiddleware";
 import {EmailConfirmationCodeMiddleware} from "../middlewares/confirmationEmailMiddleware";
 import {emailResendingMiddleware} from "../middlewares/emailResendingMiddleware";
+import {RateLimitIpMiddleware} from "../middlewares/rateLimitIpMiddleware";
 
 export const authRouter = Router({})
 
-authRouter.post('/login', LoginUserMiddleware, async (req: RequestWithBody<AuthType>, res: Response) => {
+authRouter.post('/login', RateLimitIpMiddleware, LoginUserMiddleware, async (req: RequestWithBody<AuthType>, res: Response) => {
     const userId = await authService.checkCredentials(req.body.loginOrEmail, req.body.password)
     if (!userId) {
         res.sendStatus(401)
@@ -29,22 +28,22 @@ authRouter.post('/login', LoginUserMiddleware, async (req: RequestWithBody<AuthT
     })
 })
 
-authRouter.get('/me', UserAuthMiddleware, async (req: Request,  res: Response) => {
+authRouter.get('/me', RateLimitIpMiddleware, UserAuthMiddleware, async (req: Request,  res: Response) => {
     const user = await usersService.findUserById(req.userId!)
     res.send(user)
 })
 
-authRouter.post('/registration', ...RegistrationUserMiddleware, async (req: RequestWithBody<UsersInputType>, res: Response)=>{
+authRouter.post('/registration', RateLimitIpMiddleware, ...RegistrationUserMiddleware, async (req: RequestWithBody<UsersInputType>, res: Response)=>{
     await authService.createUser(req.body.login, req.body.password, req.body.email)
     res.sendStatus(204)
 })
 
-authRouter.post('/registration-confirmation', ...EmailConfirmationCodeMiddleware, async (req: RequestWithBody<{ code: string }>, res: Response)=>{
+authRouter.post('/registration-confirmation', RateLimitIpMiddleware, ...EmailConfirmationCodeMiddleware, async (req: RequestWithBody<{ code: string }>, res: Response)=>{
     await authService.emailConfirmation(req.body.code)
     res.sendStatus(204)
 })
 
-authRouter.post('/registration-email-resending', ...emailResendingMiddleware, async (req: RequestWithBody<{ email: string }>, res: Response) =>{
+authRouter.post('/registration-email-resending', RateLimitIpMiddleware, ...emailResendingMiddleware, async (req: RequestWithBody<{ email: string }>, res: Response) =>{
     await authService.resendEmail(req.body.email)
     res.sendStatus(204)
 })

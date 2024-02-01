@@ -4,7 +4,7 @@ import {postRouter} from "./routers/postRouter";
 import {
     blogsCollection,
     commentsCollection,
-    postsCollection,
+    postsCollection, rateLimitIpCollection,
     tokensBlackListCollection,
     usersCollection
 } from "./db/runDb";
@@ -17,6 +17,7 @@ export const app = express()
 
 app.use(express.json())
 app.use(cookieParser())
+app.set('trust proxy', true)
 
 app.delete("/testing/all-data", async (req: Request, res: Response) => {
     await blogsCollection.deleteMany({})
@@ -24,6 +25,7 @@ app.delete("/testing/all-data", async (req: Request, res: Response) => {
     await usersCollection.deleteMany({})
     await commentsCollection.deleteMany({})
     await tokensBlackListCollection.deleteMany({})
+    await rateLimitIpCollection.deleteMany({})
     res.sendStatus(204)
 });
 app.use("/blogs", blogRouter)

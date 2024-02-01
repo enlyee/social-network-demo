@@ -4,6 +4,7 @@ import {BlogsDbType} from "../models/blogsType";
 import dotenv from 'dotenv'
 import {EmailConfirmationType, UsersDbType} from "../models/usersTypes";
 import {CommentsDbType} from "../models/commentsTypes";
+import {RateLimitIpType} from "../models/rateLimitIpType";
 dotenv.config()
 
 
@@ -19,6 +20,9 @@ export const commentsCollection = client.db().collection<CommentsDbType>('commen
 
 export const emailConfirmationCollection = client.db().collection<EmailConfirmationType>('emailconfirmations')
 export const tokensBlackListCollection = client.db().collection<{token: string}>('tokensBlackList')
+export const rateLimitIpCollection = client.db().collection<RateLimitIpType>('rateLimitIp')
+
+
 export async function runDb() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
