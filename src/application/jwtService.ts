@@ -10,7 +10,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "123"
 
 export const jwtService = {
     async createJwtAccessToken(userId: string) {
-        return jwt.sign({userId: userId}, JWT_SECRET, {expiresIn: "1000sec"})
+        return jwt.sign({userId: userId}, JWT_SECRET, {expiresIn: "10sec"})
     },
     async createLoginJwtRefreshToken(userId: string, ip: string, deviceName: string) {
         const date = new Date()
@@ -23,7 +23,7 @@ export const jwtService = {
             expiresAt: add(date, {seconds: 20})
         }
         await sessionRepository.addAuthSession(auth)
-        return jwt.sign({userId: userId, deviceId: auth.deviceId}, JWT_SECRET, {expiresIn: "2000sec"})
+        return jwt.sign({userId: userId, deviceId: auth.deviceId}, JWT_SECRET, {expiresIn: "20sec"})
     },
     async updateJwtRefreshToken(userId: string, deviceId: string) {
         const status = await sessionRepository.updateAuthSession(userId, deviceId)
