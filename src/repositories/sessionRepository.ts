@@ -21,5 +21,8 @@ export const sessionRepository = {
     },
     async deleteAllSessionsExcludeThis(userId: string, deviceId: string) {
         return await deviceAuthSessions.deleteMany({$and: [{userId: userId}, {deviceId: {$ne: deviceId}}]})
+    },
+    async getSessionExpiresAt(userId: string, deviceId: string) {
+        return (await deviceAuthSessions.findOne({$and: [{userId: userId}, {deviceId: deviceId}]}))?.expiresAt
     }
 }

@@ -26,6 +26,10 @@ export const jwtService = {
         return jwt.sign({userId: userId, deviceId: auth.deviceId}, JWT_SECRET, {expiresIn: "20sec"})
     },
     async updateJwtRefreshToken(userId: string, deviceId: string) {
+        const expiresAt = await sessionRepository.getSessionExpiresAt(userId, deviceId)
+        if (!expiresAt || (expiresAt < new Date())) {
+            return null
+        }
         const status = await sessionRepository.updateAuthSession(userId, deviceId)
         if (!status) {
             return null
