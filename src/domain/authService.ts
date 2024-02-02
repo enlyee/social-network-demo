@@ -1,11 +1,11 @@
 import {usersRepository} from "../repositories/usersRepository";
 import bcrypt from "bcryptjs";
 import {EmailConfirmationType, UsersDbType} from "../models/usersTypes";
-import { v4 as uuidv4 } from 'uuid';
+import {v4 as uuidv4} from 'uuid';
 import {add} from "date-fns/add";
 import {emailAdapter} from "../adapters/emailAdapter";
 import {authRepository} from "../repositories/authRepository";
-import {usersService} from "./usersService";
+import {sessionRepository} from "../repositories/sessionRepository";
 
 export const authService = {
     async checkCredentials(login: string, password: string){
@@ -65,5 +65,9 @@ export const authService = {
         }
         await authRepository.createConfirmation(emailConfirmationData)
         await emailAdapter.sendMail(email, emailConfirmationData.confirmationCode)
+    },
+    async deleteSession(userId: string, deviceId: string){
+        return await sessionRepository.deleteSession(userId, deviceId)
     }
+
  }

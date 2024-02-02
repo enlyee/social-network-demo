@@ -5,13 +5,13 @@ import {
     blogsCollection,
     commentsCollection,
     postsCollection, rateLimitIpCollection,
-    tokensBlackListCollection,
     usersCollection
 } from "./db/runDb";
 import {authRouter} from "./routers/authRouter";
 import {usersRouter} from "./routers/usersRouter";
 import {commentsRouter} from "./routers/commentsRouter";
 import cookieParser from "cookie-parser";
+import {securityRouter} from "./routers/securityRouter";
 
 export const app = express()
 
@@ -24,7 +24,6 @@ app.delete("/testing/all-data", async (req: Request, res: Response) => {
     await postsCollection.deleteMany({})
     await usersCollection.deleteMany({})
     await commentsCollection.deleteMany({})
-    await tokensBlackListCollection.deleteMany({})
     await rateLimitIpCollection.deleteMany({})
     res.sendStatus(204)
 });
@@ -33,3 +32,4 @@ app.use("/posts", postRouter)
 app.use('/auth', authRouter)
 app.use('/users', usersRouter)
 app.use('/comments', commentsRouter)
+app.use('/security', securityRouter)

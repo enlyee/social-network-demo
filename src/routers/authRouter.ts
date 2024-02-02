@@ -11,6 +11,7 @@ import {RegistrationUserMiddleware} from "../middlewares/registrationUserMiddlew
 import {EmailConfirmationCodeMiddleware} from "../middlewares/confirmationEmailMiddleware";
 import {emailResendingMiddleware} from "../middlewares/emailResendingMiddleware";
 import {RateLimitIpMiddleware} from "../middlewares/rateLimitIpMiddleware";
+import {randomUUID} from "crypto";
 
 export const authRouter = Router({})
 
@@ -20,9 +21,9 @@ authRouter.post('/login', RateLimitIpMiddleware, LoginUserMiddleware, async (req
         res.sendStatus(401)
         return
     }
-    const refreshToken = await jwtService.createJwtRefreshToken(userId)
+    const refreshToken = await jwtService.createLoginJwtRefreshToken(userId, req.ip!, req.headers["user-agent"] || 'Unknown')
     res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true,})
-    const token = await jwtService.createJwtAccessToken(userId, refreshToken)
+    const token = await jwtService.createJwtAccessToken(userId)
     res.status(200).send({
         "accessToken": token
     })
@@ -50,18 +51,17 @@ authRouter.post('/registration-email-resending', RateLimitIpMiddleware, ...email
 
 authRouter.post('/refresh-token', async (req: Request, res: Response) =>{
     const oldToken = req.cookies.refreshToken
-    const userId = await jwtService.getUserIdByToken(oldToken)
-    if (!userId) {
+    const decToken = await jwtService.getUserIdAndDeviceByToken(oldToken)
+    if (!decToken) {
         res.sendStatus(401)
         return
     }
-    const token = await jwtService.createJwtAccessToken(userId, oldToken)
-    if (!token) {
+    const refreshToken = await jwtService.updateJwtRefreshToken(decToken.userId, decToken.deviceId)
+    if (!refreshToken) {
         res.sendStatus(401)
         return
     }
-    await jwtService.addTokenToBlackList(oldToken)
-    const refreshToken = await jwtService.createJwtRefreshToken(userId)
+    const token = await jwtService.createJwtAccessToken(decToken.userId)
     res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true,})
 
     res.status(200).send({
@@ -71,17 +71,15 @@ authRouter.post('/refresh-token', async (req: Request, res: Response) =>{
 
 authRouter.post('/logout', async (req: Request, res: Response) => {
     const oldToken = req.cookies.refreshToken
-    const userId = await jwtService.getUserIdByToken(oldToken)
-    if (!userId) {
+    const tokenInfo = await jwtService.getUserIdAndDeviceByToken(oldToken)
+    if (!tokenInfo) {
         res.sendStatus(401)
         return
     }
-    const inBlockList = await jwtService.checkRefreshTokenInBlackList(oldToken)
-    if (inBlockList) {
+    const deletingSessionStatus = await authService.deleteSession(tokenInfo.userId, tokenInfo.deviceId)
+    if (!deletingSessionStatus) {
         res.sendStatus(401)
-        return
     }
-    await jwtService.addTokenToBlackList(oldToken)
     res.sendStatus(204)
 })
 

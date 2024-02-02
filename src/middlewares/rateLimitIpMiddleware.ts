@@ -1,6 +1,6 @@
 import {NextFunction, Request, Response} from "express";
 import {rateLimitIpCollection} from "../db/runDb";
-import {RateLimitIpType} from "../models/rateLimitIpType";
+import {RateLimitIpType} from "../models/authTypes";
 import {sub} from "date-fns/sub";
 export const RateLimitIpMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const userData: RateLimitIpType = {

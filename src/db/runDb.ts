@@ -4,7 +4,7 @@ import {BlogsDbType} from "../models/blogsType";
 import dotenv from 'dotenv'
 import {EmailConfirmationType, UsersDbType} from "../models/usersTypes";
 import {CommentsDbType} from "../models/commentsTypes";
-import {RateLimitIpType} from "../models/rateLimitIpType";
+import {AuthSessionsType, RateLimitIpType} from "../models/authTypes";
 dotenv.config()
 
 
@@ -19,9 +19,9 @@ export const usersCollection = client.db().collection<UsersDbType>('users')
 export const commentsCollection = client.db().collection<CommentsDbType>('comments')
 
 export const emailConfirmationCollection = client.db().collection<EmailConfirmationType>('emailconfirmations')
-export const tokensBlackListCollection = client.db().collection<{token: string}>('tokensBlackList')
+//export const tokensBlackListCollection = client.db().collection<{token: string}>('tokensBlackList')
 export const rateLimitIpCollection = client.db().collection<RateLimitIpType>('rateLimitIp')
-
+export const deviceAuthSessions = client.db().collection<AuthSessionsType>('deviceAuthSessions')
 
 export async function runDb() {
     try {
