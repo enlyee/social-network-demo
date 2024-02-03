@@ -12,7 +12,8 @@ export const securityService = {
     },
     async deleteSession(userId: string, deviceId: string) {
         const userIdDeviceOwner = await sessionRepository.getUserIdDeviceOwner(deviceId)
-        if (!userIdDeviceOwner) return 403
+        if (!userIdDeviceOwner) return 404
+        if (userIdDeviceOwner !== userId) return 403
         return await sessionRepository.deleteSession(userId, deviceId)
     }
 }
