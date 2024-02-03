@@ -42,10 +42,12 @@ securityRouter.delete('/devices/:deviceId', async (req: RequestWithParams<{ devi
     switch (status) {
         case 403:
             res.sendStatus(403)
-            return
+            break
         case false:
             res.sendStatus(404)
-            return
+            break
+        default:
+            res.sendStatus(204)
     }
-    res.sendStatus(204)
+
 })
