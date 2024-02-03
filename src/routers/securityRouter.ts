@@ -23,11 +23,7 @@ securityRouter.delete('/devices', async (req: Request, res: Response)=> {
         res.sendStatus(401)
         return
     }
-    const status = await securityService.deleteAllSessionsExcludeThis(tokenContains.userId, tokenContains.deviceId)
-    if (!status) {
-        res.sendStatus(401)
-        return
-    }
+    await securityService.deleteAllSessionsExcludeThis(tokenContains.userId, tokenContains.deviceId)
     res.sendStatus(204)
 })
 
@@ -43,7 +39,7 @@ securityRouter.delete('/devices/:deviceId', async (req: RequestWithParams<{ devi
         case 403:
             res.sendStatus(403)
             break
-        case false:
+        case 404:
             res.sendStatus(404)
             break
         default:
