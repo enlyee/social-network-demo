@@ -39,9 +39,13 @@ securityRouter.delete('/devices/:deviceId', async (req: RequestWithParams<{ devi
         return
     }
     const status = await securityService.deleteSession(tokenContains.userId, req.params.deviceId)
-    if (!status) {
-        res.sendStatus(404)
-        return
+    switch (status) {
+        case 403:
+            res.sendStatus(403)
+            return
+        case false:
+            res.sendStatus(404)
+            return
     }
     res.sendStatus(204)
 })

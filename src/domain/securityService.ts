@@ -11,7 +11,8 @@ export const securityService = {
         return !!status.deletedCount
     },
     async deleteSession(userId: string, deviceId: string) {
-        const status = await sessionRepository.deleteSession(userId, deviceId)
-        return status
+        const userIdDeviceOwner = await sessionRepository.getUserIdDeviceOwner(deviceId)
+        if (!userIdDeviceOwner) return 403
+        return await sessionRepository.deleteSession(userId, deviceId)
     }
 }

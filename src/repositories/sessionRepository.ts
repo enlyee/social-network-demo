@@ -15,6 +15,11 @@ export const sessionRepository = {
         const status = await deviceAuthSessions.deleteOne({$and: [{userId: userId}, {deviceId: deviceId}]})
         return !!status.deletedCount
     },
+    async getUserIdDeviceOwner(deviceId: string) {
+        const session = await deviceAuthSessions.findOne({deviceId: deviceId})
+        if (!session) return null
+        return session.userId
+    },
     async getAllSessions(userId: string) {
         return await deviceAuthSessions.find({userId: userId}).toArray()
     },
