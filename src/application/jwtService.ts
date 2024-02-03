@@ -14,8 +14,8 @@ export const jwtService = {
     },
     async createLoginJwtRefreshToken(userId: string, ip: string, deviceName: string) {
         const deviceId = randomUUID()
-        const token = jwt.sign({userId: userId, deviceId: deviceId}, JWT_SECRET, {expiresIn: "20sec"})
-        const date = await this.getTokenIssuing(token)
+        const token = jwt.sign({userId: userId, deviceId: deviceId}, JWT_SECRET, {expiresIn: "200sec"})
+        const date = add((await this.getTokenIssuing(token))!, {seconds: 60})
         const auth: AuthSessionsType = {
             userId: userId,
             ip: ip,
@@ -29,7 +29,7 @@ export const jwtService = {
     },
     async updateJwtRefreshToken(userId: string, deviceId: string, tokenIssuedDate: Date) {
         const sessionIssuedAt = await sessionRepository.getSessionIssuedAt(userId, deviceId)
-        if ( (!sessionIssuedAt) || (sessionIssuedAt > add(tokenIssuedDate, {seconds: -1}))) {
+        if ( (!sessionIssuedAt) || (sessionIssuedAt > tokenIssuedDate)) {
             return null
         }
         const token = jwt.sign({userId: userId, deviceId: deviceId}, JWT_SECRET, {expiresIn: "20sec"})
