@@ -77,7 +77,7 @@ authRouter.post('/logout', async (req: Request, res: Response) => {
         res.sendStatus(401)
         return
     }
-    const deletingSessionStatus = await authService.deleteSession(tokenInfo.userId, tokenInfo.deviceId)
+    const deletingSessionStatus = await authService.deleteSession(tokenInfo.userId, tokenInfo.deviceId, (await jwtService.getTokenIssuing(oldToken))!)
     if (!deletingSessionStatus) {
         res.sendStatus(401)
         return

@@ -66,8 +66,12 @@ export const authService = {
         await authRepository.createConfirmation(emailConfirmationData)
         await emailAdapter.sendMail(email, emailConfirmationData.confirmationCode)
     },
-    async deleteSession(userId: string, deviceId: string){
-        return await sessionRepository.deleteSession(userId, deviceId)
+    async deleteSession(userId: string, deviceId: string, tokenIssuedDate: Date){
+        const sessionIssuedAt = await sessionRepository.getSessionIssuedAt(userId, deviceId)
+        if ( (!sessionIssuedAt) || (sessionIssuedAt.toISOString() != tokenIssuedDate.toISOString())) {
+            return null
+        }
+        return sessionRepository.deleteSession(userId, deviceId)
     }
 
  }
