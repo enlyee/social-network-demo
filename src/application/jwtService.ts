@@ -13,28 +13,32 @@ export const jwtService = {
         return jwt.sign({userId: userId}, JWT_SECRET, {expiresIn: "10sec"})
     },
     async createLoginJwtRefreshToken(userId: string, ip: string, deviceName: string) {
-        const date = new Date()
+        const deviceId = randomUUID()
+        const token = jwt.sign({userId: userId, deviceId: deviceId}, JWT_SECRET, {expiresIn: "20sec"})
+        const date = await this.getTokenIssuing(token)
         const auth: AuthSessionsType = {
             userId: userId,
             ip: ip,
-            deviceId: randomUUID(),
+            deviceId: deviceId,
             title: deviceName,
-            lastActiveDate: date,
-            expiresAt: add(date, {seconds: 20})
+            lastActiveDate: date!,
+            expiresAt: add(date!, {seconds: 20})
         }
         await sessionRepository.addAuthSession(auth)
-        return jwt.sign({userId: userId, deviceId: auth.deviceId}, JWT_SECRET, {expiresIn: "20sec"})
+        return token
     },
-    async updateJwtRefreshToken(userId: string, deviceId: string) {
-        const expiresAt = await sessionRepository.getSessionExpiresAt(userId, deviceId)
-        if (!expiresAt || (expiresAt < new Date())) {
+    async updateJwtRefreshToken(userId: string, deviceId: string, tokenIssuedDate: Date) {
+        const sessionIssuedAt = await sessionRepository.getSessionIssuedAt(userId, deviceId)
+        if ( (!sessionIssuedAt) || (sessionIssuedAt > tokenIssuedDate)) {
             return null
         }
-        const status = await sessionRepository.updateAuthSession(userId, deviceId)
+        const token = jwt.sign({userId: userId, deviceId: deviceId}, JWT_SECRET, {expiresIn: "20sec"})
+        const date = await this.getTokenIssuing(token)
+        const status = await sessionRepository.updateAuthSession(userId, deviceId, date!)
         if (!status) {
             return null
         }
-        return jwt.sign({userId: userId, deviceId: deviceId}, JWT_SECRET, {expiresIn: "20sec"})
+        return token
     },
     async getUserIdByToken(token: string) {
         try {
@@ -51,5 +55,14 @@ export const jwtService = {
         } catch (err) {
             return null
         }
+    },
+    async getTokenIssuing(token: string) {
+        try {
+            const result: any = jwt.verify(token, JWT_SECRET)
+            return new Date(result.iat.toString()*1000)
+        } catch (err) {
+            return null
+        }
+
     }
 }

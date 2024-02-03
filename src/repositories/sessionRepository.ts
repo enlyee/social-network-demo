@@ -6,8 +6,7 @@ export const sessionRepository = {
     async addAuthSession(auth: AuthSessionsType) {
         await deviceAuthSessions.insertOne(auth)
     },
-    async updateAuthSession(userId: string, deviceId: string) {
-        const date = new Date()
+    async updateAuthSession(userId: string, deviceId: string, date: Date) {
         const status = await deviceAuthSessions.updateOne({$and: [{userId: userId}, {deviceId: deviceId}]},
             {$set: {lastActiveDate: date, expiresAt: add(date, {seconds: 20})}})
         return !!status.matchedCount
@@ -22,7 +21,7 @@ export const sessionRepository = {
     async deleteAllSessionsExcludeThis(userId: string, deviceId: string) {
         return await deviceAuthSessions.deleteMany({$and: [{userId: userId}, {deviceId: {$ne: deviceId}}]})
     },
-    async getSessionExpiresAt(userId: string, deviceId: string) {
-        return (await deviceAuthSessions.findOne({$and: [{userId: userId}, {deviceId: deviceId}]}))?.expiresAt
+    async getSessionIssuedAt(userId: string, deviceId: string) {
+        return (await deviceAuthSessions.findOne({$and: [{userId: userId}, {deviceId: deviceId}]}))?.lastActiveDate
     }
 }

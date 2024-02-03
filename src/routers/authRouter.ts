@@ -11,7 +11,6 @@ import {RegistrationUserMiddleware} from "../middlewares/registrationUserMiddlew
 import {EmailConfirmationCodeMiddleware} from "../middlewares/confirmationEmailMiddleware";
 import {emailResendingMiddleware} from "../middlewares/emailResendingMiddleware";
 import {RateLimitIpMiddleware} from "../middlewares/rateLimitIpMiddleware";
-import {randomUUID} from "crypto";
 
 export const authRouter = Router({})
 
@@ -56,7 +55,7 @@ authRouter.post('/refresh-token', async (req: Request, res: Response) =>{
         res.sendStatus(401)
         return
     }
-    const refreshToken = await jwtService.updateJwtRefreshToken(decToken.userId, decToken.deviceId)
+    const refreshToken = await jwtService.updateJwtRefreshToken(decToken.userId, decToken.deviceId, await jwtService.getTokenIssuing(oldToken))
     if (!refreshToken) {
         res.sendStatus(401)
         return
