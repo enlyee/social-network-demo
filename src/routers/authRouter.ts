@@ -55,7 +55,7 @@ authRouter.post('/refresh-token', async (req: Request, res: Response) =>{
         res.sendStatus(401)
         return
     }
-    const refreshToken = await jwtService.updateJwtRefreshToken(decToken.userId, decToken.deviceId, await jwtService.getTokenIssuing(oldToken))
+    const refreshToken = await jwtService.updateJwtRefreshToken(decToken.userId, decToken.deviceId, (await jwtService.getTokenIssuing(oldToken))!)
     if (!refreshToken) {
         res.sendStatus(401)
         return
