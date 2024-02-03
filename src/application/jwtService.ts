@@ -38,6 +38,7 @@ export const jwtService = {
         if (!status) {
             return null
         }
+
         return token
     },
     async getUserIdByToken(token: string) {
