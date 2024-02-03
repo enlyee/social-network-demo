@@ -52,11 +52,13 @@ authRouter.post('/refresh-token', async (req: Request, res: Response) =>{
     const oldToken = req.cookies.refreshToken
     const decToken = await jwtService.getUserIdAndDeviceByToken(oldToken)
     if (!decToken) {
+        console.log('1')
         res.sendStatus(401)
         return
     }
     const refreshToken = await jwtService.updateJwtRefreshToken(decToken.userId, decToken.deviceId, (await jwtService.getTokenIssuing(oldToken))!)
     if (!refreshToken) {
+        console.log('2')
         res.sendStatus(401)
         return
     }
