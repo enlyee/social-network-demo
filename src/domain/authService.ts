@@ -3,9 +3,9 @@ import bcrypt from "bcryptjs";
 import {EmailConfirmationType, UsersDbType} from "../models/usersTypes";
 import {v4 as uuidv4} from 'uuid';
 import {add} from "date-fns/add";
-import {emailAdapter} from "../adapters/emailAdapter";
 import {authRepository} from "../repositories/authRepository";
 import {sessionRepository} from "../repositories/sessionRepository";
+import {emailManager} from "../managers/emailManager";
 
 export const authService = {
     async checkCredentials(login: string, password: string){
@@ -46,7 +46,7 @@ export const authService = {
             }),
         }
         await authRepository.createConfirmation(emailConfirmationData)
-        await emailAdapter.sendMail(email, emailConfirmationData.confirmationCode)
+        await emailManager.emailConfirmation(email, emailConfirmationData.confirmationCode)
     },
     async emailConfirmation(code: string) {
         const userID = (await authRepository.getConfirmation(code))?.userId
@@ -64,7 +64,7 @@ export const authService = {
             }),
         }
         await authRepository.createConfirmation(emailConfirmationData)
-        await emailAdapter.sendMail(email, emailConfirmationData.confirmationCode)
+        await emailManager.emailConfirmation(email, emailConfirmationData.confirmationCode)
     },
     async deleteSession(userId: string, deviceId: string, tokenIssuedDate: Date){
         const sessionIssuedAt = await sessionRepository.getSessionIssuedAt(userId, deviceId)

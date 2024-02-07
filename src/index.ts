@@ -1,5 +1,5 @@
 import {app} from "./settings";
-import {runDb} from "./db/runDb";
+import {runDb} from "./db/db";
 import dotenv from 'dotenv'
 dotenv.config()
 

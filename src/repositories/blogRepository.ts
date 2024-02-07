@@ -1,5 +1,5 @@
 import {BlogInputType, BlogsDbType, BlogsOutputType, QueryBlogsOutputType} from "../models/blogsType";
-import {blogsCollection, postsCollection} from "../db/runDb";
+import {blogsCollection, postsCollection} from "../db/db";
 import {BlogMapper} from "../models/mappers/blogsMapper";
 import {ObjectId} from "mongodb";
 import {QueryGetBlogsType, QueryGetPostsType} from "../models/commonType";

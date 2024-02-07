@@ -3,10 +3,10 @@ import {blogRouter} from "./routers/blogRouter";
 import {postRouter} from "./routers/postRouter";
 import {
     blogsCollection,
-    commentsCollection, deviceAuthSessions,
+    commentsCollection, deviceAuthSessionsCollection,
     postsCollection, rateLimitIpCollection,
     usersCollection
-} from "./db/runDb";
+} from "./db/db";
 import {authRouter} from "./routers/authRouter";
 import {usersRouter} from "./routers/usersRouter";
 import {commentsRouter} from "./routers/commentsRouter";
@@ -25,7 +25,7 @@ app.delete("/testing/all-data", async (req: Request, res: Response) => {
     await usersCollection.deleteMany({})
     await commentsCollection.deleteMany({})
     await rateLimitIpCollection.deleteMany({})
-    await deviceAuthSessions.deleteMany({})
+    await deviceAuthSessionsCollection.deleteMany({})
     res.sendStatus(204)
 });
 app.use("/blogs", blogRouter)

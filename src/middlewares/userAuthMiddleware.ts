@@ -1,5 +1,5 @@
 import {Request, Response, NextFunction} from "express";
-import {jwtService} from "../application/jwtService";
+import {jwtAdapter} from "../adapters/jwtAdapter";
 
 export const UserAuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     if (!req.headers.authorization) {
@@ -9,7 +9,7 @@ export const UserAuthMiddleware = async (req: Request, res: Response, next: Next
 
     const token = req.headers.authorization.split(' ')[1]
 
-    const userId = await jwtService.getUserIdByToken(token)
+    const userId = (await jwtAdapter.getTokenPayload(token)).userId
     if (userId) {
         req.userId = userId.toString()
         next()

@@ -1,7 +1,6 @@
-import {blogsCollection, usersCollection} from "../db/runDb";
-import {FindParamsUsersType, UserMeType, UsersDbType} from "../models/usersTypes";
-import {UsersFindManyMapper, UsersFindMeMapper} from "../models/mappers/usersMapper";
-import {QueryGetUsersType} from "../models/commonType";
+import {usersCollection} from "../db/db";
+import {FindParamsUsersType, UsersDbType} from "../models/usersTypes";
+import {UsersFindManyMapper} from "../models/mappers/usersMapper";
 import {ObjectId} from "mongodb";
 
 export const usersRepository = {
@@ -33,7 +32,6 @@ export const usersRepository = {
         return !!index.deletedCount
     },
     async findUserById(id: string) {
-        const user = await usersCollection.findOne({_id: new ObjectId(id)})
-        return user
+        return await usersCollection.findOne({_id: new ObjectId(id)})
     }
 }

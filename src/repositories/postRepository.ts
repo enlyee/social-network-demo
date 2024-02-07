@@ -1,9 +1,8 @@
 import {PostInputType, PostsDbType, PostsOutputType, QueryPostsOutputType} from "../models/postsType";
-import {blogsCollection, postsCollection} from "../db/runDb";
+import {postsCollection} from "../db/db";
 import {PostMapper} from "../models/mappers/postsMapper";
 import {ObjectId} from "mongodb";
 import {QueryGetPostsType} from "../models/commonType";
-import {BlogMapper} from "../models/mappers/blogsMapper";
 const sortingPostsName = ['id', 'title', 'shortDescription', 'content', 'blogName', 'createdAt', 'blogId']
 export const postRepository = {
     async getPosts(query: QueryGetPostsType): Promise<QueryPostsOutputType> {

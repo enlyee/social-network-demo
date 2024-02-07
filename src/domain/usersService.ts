@@ -1,14 +1,9 @@
-import bcrypt, {hash} from 'bcryptjs'
+import bcrypt from 'bcryptjs'
 import {usersRepository} from "../repositories/usersRepository";
 import {QueryGetUsersType} from "../models/commonType";
-import {EmailConfirmationType, FindParamsUsersType, UserMeType, UsersDbType} from "../models/usersTypes";
-import {blogsCollection} from "../db/runDb";
-import {BlogMapper} from "../models/mappers/blogsMapper";
+import {FindParamsUsersType, UserMeType, UsersDbType} from "../models/usersTypes";
 import {UsersFindManyMapper, UsersFindMeMapper} from "../models/mappers/usersMapper";
-import {jwtService} from "../application/jwtService";
 import {authService} from "./authService";
-import {v4 as uuidv4} from "uuid";
-import {add} from "date-fns/add";
 const sortingUsersName = ['login', 'email', 'createdAt']
 export const usersService = {
     async findUsers(query: QueryGetUsersType){

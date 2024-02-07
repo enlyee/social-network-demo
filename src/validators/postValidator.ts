@@ -1,5 +1,5 @@
 import {body} from "express-validator";
-import {blogsCollection} from "../db/runDb";
+import {blogsCollection} from "../db/db";
 import {ObjectId} from "mongodb";
 
 export const postTitleValidator = body('title').trim().isLength({min: 1, max: 30})

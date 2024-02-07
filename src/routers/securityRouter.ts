@@ -1,13 +1,13 @@
 import {Router, Request, Response} from "express";
-import {jwtService} from "../application/jwtService";
 import {securityService} from "../domain/securityService";
 import {RequestWithParams} from "../models/commonType";
+import {jwtAdapter} from "../adapters/jwtAdapter";
 
 export const securityRouter = Router({})
 
 securityRouter.get('/devices', async (req: Request, res: Response) => {
     const refreshToken = req.cookies.refreshToken
-    const tokenContains = await jwtService.getUserIdAndDeviceByToken(refreshToken)
+    const tokenContains = await jwtAdapter.getTokenPayload(refreshToken)
     if (!tokenContains) {
         res.sendStatus(401)
         return
@@ -18,7 +18,7 @@ securityRouter.get('/devices', async (req: Request, res: Response) => {
 
 securityRouter.delete('/devices', async (req: Request, res: Response)=> {
     const refreshToken = req.cookies.refreshToken
-    const tokenContains = await jwtService.getUserIdAndDeviceByToken(refreshToken)
+    const tokenContains = await jwtAdapter.getTokenPayload(refreshToken)
     if (!tokenContains) {
         res.sendStatus(401)
         return
@@ -29,7 +29,7 @@ securityRouter.delete('/devices', async (req: Request, res: Response)=> {
 
 securityRouter.delete('/devices/:deviceId', async (req: RequestWithParams<{ deviceId: string }>, res: Response)=> {
     const refreshToken = req.cookies.refreshToken
-    const tokenContains = await jwtService.getUserIdAndDeviceByToken(refreshToken)
+    const tokenContains = await jwtAdapter.getTokenPayload(refreshToken)
     if (!tokenContains) {
         res.sendStatus(401)
         return

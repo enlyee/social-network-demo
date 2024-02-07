@@ -1,12 +1,10 @@
-import {commentsCollection, usersCollection} from "../db/runDb";
+import {commentsCollection} from "../db/db";
 import {ObjectId} from "mongodb";
-import {FindParamsUsersType} from "../models/usersTypes";
 import {CommentsDbType, FindParamsCommentsType} from "../models/commentsTypes";
 
 export const commentsRepository = {
     async getCommentById(id: string) {
-        const comment = await commentsCollection.findOne({_id: new ObjectId(id)})
-        return comment
+        return await commentsCollection.findOne({_id: new ObjectId(id)})
     },
     async deleteCommentById(id: string){
         const status = await commentsCollection.deleteOne({_id: new ObjectId(id)})

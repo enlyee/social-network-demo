@@ -18,16 +18,15 @@ export const usersCollection = client.db().collection<UsersDbType>('users')
 
 export const commentsCollection = client.db().collection<CommentsDbType>('comments')
 
-export const emailConfirmationCollection = client.db().collection<EmailConfirmationType>('emailconfirmations')
-//export const tokensBlackListCollection = client.db().collection<{token: string}>('tokensBlackList')
+export const emailConfirmationCollection = client.db().collection<EmailConfirmationType>('emailConfirmations')
 export const rateLimitIpCollection = client.db().collection<RateLimitIpType>('rateLimitIp')
-export const deviceAuthSessions = client.db().collection<AuthSessionsType>('deviceAuthSessions')
+export const deviceAuthSessionsCollection = client.db().collection<AuthSessionsType>('deviceAuthSessions')
 
 export async function runDb() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
-        console.log("successfully connected to MongoDB!");
+        console.log("Successfully connected to MongoDB!");
     } catch {
         // Ensures that the client will close when you finish/error
         await client.close();

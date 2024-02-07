@@ -11,6 +11,7 @@ import {RegistrationUserMiddleware} from "../middlewares/registrationUserMiddlew
 import {EmailConfirmationCodeMiddleware} from "../middlewares/confirmationEmailMiddleware";
 import {emailResendingMiddleware} from "../middlewares/emailResendingMiddleware";
 import {RateLimitIpMiddleware} from "../middlewares/rateLimitIpMiddleware";
+import {jwtAdapter} from "../adapters/jwtAdapter";
 
 export const authRouter = Router({})
 
@@ -50,15 +51,13 @@ authRouter.post('/registration-email-resending', RateLimitIpMiddleware, ...email
 
 authRouter.post('/refresh-token', async (req: Request, res: Response) =>{
     const oldToken = req.cookies.refreshToken
-    const decToken = await jwtService.getUserIdAndDeviceByToken(oldToken)
+    const decToken = await jwtAdapter.getTokenPayload(oldToken)
     if (!decToken) {
-        console.log('1')
         res.sendStatus(401)
         return
     }
-    const refreshToken = await jwtService.updateJwtRefreshToken(decToken.userId, decToken.deviceId, (await jwtService.getTokenIssuing(oldToken))!)
+    const refreshToken = await jwtService.updateJwtRefreshToken(decToken.userId, decToken.deviceId, (await jwtAdapter.getTokenIssuing(oldToken))!)
     if (!refreshToken) {
-        console.log('2')
         res.sendStatus(401)
         return
     }
@@ -72,12 +71,12 @@ authRouter.post('/refresh-token', async (req: Request, res: Response) =>{
 
 authRouter.post('/logout', async (req: Request, res: Response) => {
     const oldToken = req.cookies.refreshToken
-    const tokenInfo = await jwtService.getUserIdAndDeviceByToken(oldToken)
+    const tokenInfo = await jwtAdapter.getTokenPayload(oldToken)
     if (!tokenInfo) {
         res.sendStatus(401)
         return
     }
-    const deletingSessionStatus = await authService.deleteSession(tokenInfo.userId, tokenInfo.deviceId, (await jwtService.getTokenIssuing(oldToken))!)
+    const deletingSessionStatus = await authService.deleteSession(tokenInfo.userId, tokenInfo.deviceId, (await jwtAdapter.getTokenIssuing(oldToken))!)
     if (!deletingSessionStatus) {
         res.sendStatus(401)
         return

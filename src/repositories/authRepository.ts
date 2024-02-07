@@ -1,5 +1,5 @@
 import {EmailConfirmationType} from "../models/usersTypes";
-import {emailConfirmationCollection, usersCollection} from "../db/runDb";
+import {emailConfirmationCollection, usersCollection} from "../db/db";
 import {ObjectId} from "mongodb";
 
 export const authRepository = {
@@ -7,8 +7,7 @@ export const authRepository = {
         await emailConfirmationCollection.insertOne(confirmation)
     },
     async getConfirmation(code: string){
-        const confCode = await emailConfirmationCollection.findOne({confirmationCode: code})
-        return confCode
+        return await emailConfirmationCollection.findOne({confirmationCode: code})
     },
     async deleteConfirmationByCode(code: string){
         await emailConfirmationCollection.findOneAndDelete({confirmationCode: code})

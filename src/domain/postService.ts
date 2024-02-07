@@ -1,6 +1,4 @@
 import {PostInputType, PostsDbType, PostsOutputType, QueryPostsOutputType} from "../models/postsType";
-import {blogsCollection, postsCollection} from "../db/runDb";
-import {PostMapper} from "../models/mappers/postsMapper";
 import {ObjectId} from "mongodb";
 import {postRepository} from "../repositories/postRepository";
 import {blogRepository} from "../repositories/blogRepository";
