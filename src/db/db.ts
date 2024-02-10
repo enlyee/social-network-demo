@@ -1,33 +1,48 @@
-import {MongoClient} from "mongodb";
+import {WithId} from "mongodb";
 import {PostsDbType} from "../models/postsType";
 import {BlogsDbType} from "../models/blogsType";
 import dotenv from 'dotenv'
 import {EmailConfirmationType, UsersDbType} from "../models/usersTypes";
 import {CommentsDbType} from "../models/commentsTypes";
 import {AuthSessionsType, RateLimitIpType} from "../models/authTypes";
+import * as mongoose from "mongoose";
+import {
+    BlogSchema,
+    CommentSchema,
+    DeviceAuthSessionSchema,
+    EmailConfirmationSchema,
+    PostSchema, RateLimitIpSchema,
+    UserSchema
+} from "./mongooseSchemes";
 dotenv.config()
 
 
 const url = process.env.MONGO_URL || 'mongodb://0.0.0.0:27017'
 console.log('url: ', url)
-const client = new MongoClient(url)
 
-export const postsCollection = client.db().collection<PostsDbType>('posts')
-export const blogsCollection = client.db().collection<BlogsDbType>('blogs')
-export const usersCollection = client.db().collection<UsersDbType>('users')
+export const PostModel = mongoose.model<WithId<PostsDbType>>('posts', PostSchema)
+export const BlogModel = mongoose.model<WithId<BlogsDbType>>('blogs', BlogSchema)
+export const UserModel = mongoose.model<WithId<UsersDbType>>('users', UserSchema)
+export const CommentModel = mongoose.model<WithId<CommentsDbType>>('comments', CommentSchema)
+export const EmailConfirmationModel = mongoose.model<WithId<EmailConfirmationType>>('emailConfirmations', EmailConfirmationSchema)
+export const DeviceAuthSessionModel = mongoose.model<WithId<AuthSessionsType>>('deviceAuthSessions', DeviceAuthSessionSchema)
+export const RateLimitIpModel = mongoose.model<WithId<RateLimitIpType>>('rateLimitIps', RateLimitIpSchema)
 
-export const commentsCollection = client.db().collection<CommentsDbType>('comments')
 
-export const emailConfirmationCollection = client.db().collection<EmailConfirmationType>('emailConfirmations')
-export const rateLimitIpCollection = client.db().collection<RateLimitIpType>('rateLimitIp')
-export const deviceAuthSessionsCollection = client.db().collection<AuthSessionsType>('deviceAuthSessions')
+// export const postsCollection = client.db().collection<PostsDbType>('posts')
+//export const blogsCollection = client.db().collection<BlogsDbType>('blogs')
+//export const usersCollection = client.db().collection<UsersDbType>('users')
+//export const commentsCollection = client.db().collection<CommentsDbType>('comments')
+//export const emailConfirmationCollection = client.db().collection<EmailConfirmationType>('emailConfirmations')
+//export const rateLimitIpCollection = client.db().collection<RateLimitIpType>('rateLimitIp')
+//export const deviceAuthSessionsCollection = client.db().collection<AuthSessionsType>('deviceAuthSessions')
 
 export async function runDb() {
     try {
-        // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
-        console.log("Successfully connected to MongoDB!");
-    } catch {
-        // Ensures that the client will close when you finish/error
-        await client.close();
-}}
+        await mongoose.connect(url)
+        console.log('it is ok')
+    } catch (e) {
+        console.log('no connection')
+        await mongoose.disconnect()
+    }
+}

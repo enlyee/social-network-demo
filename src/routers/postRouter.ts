@@ -8,7 +8,6 @@ import {
     RequestWithQuery
 } from "../models/commonType";
 import {adminAuthMiddleware} from "../middlewares/adminAuthMiddleware";
-import {postRepository} from "../repositories/postRepository";
 import {PostInputType} from "../models/postsType";
 import {InputPostsMiddleware} from "../middlewares/inputPostsMiddleware";
 import {postService} from "../domain/postService";
@@ -19,6 +18,7 @@ import {UpdateCommentsMiddleware} from "../middlewares/inputCommentsMiddleware";
 export const postRouter = Router({})
 
 postRouter.get('/', async (req: RequestWithQuery<QueryGetPostsType>, res: Response) => {
+    //todo: !objectID to validator
     const query = req.query
     const posts = await postService.getPosts(query)
     res.send(posts)

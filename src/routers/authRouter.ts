@@ -16,14 +16,15 @@ import {jwtAdapter} from "../adapters/jwtAdapter";
 export const authRouter = Router({})
 
 authRouter.post('/login', RateLimitIpMiddleware, LoginUserMiddleware, async (req: RequestWithBody<AuthType>, res: Response) => {
+    //todo sokratitttt
     const userId = await authService.checkCredentials(req.body.loginOrEmail, req.body.password)
     if (!userId) {
         res.sendStatus(401)
         return
     }
     const refreshToken = await jwtService.createLoginJwtRefreshToken(userId, req.ip!, req.headers["user-agent"] || 'Unknown')
-    res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true,})
     const token = await jwtService.createJwtAccessToken(userId)
+    res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true,})
     res.status(200).send({
         "accessToken": token
     })
@@ -50,6 +51,7 @@ authRouter.post('/registration-email-resending', RateLimitIpMiddleware, ...email
 })
 
 authRouter.post('/refresh-token', async (req: Request, res: Response) =>{
+    /////////////////todo!!!!!!!!!!!!!
     const oldToken = req.cookies.refreshToken
     const decToken = await jwtAdapter.getTokenPayload(oldToken)
     if (!decToken) {

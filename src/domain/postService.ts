@@ -30,7 +30,6 @@ export const postService = {
         return await postRepository.deletePost(id)
     },
     async updatePost(id: string, post: PostInputType): Promise<boolean>{
-        const ind = await postRepository.updatePost(id, post)
-        return !!ind.matchedCount;
+        return await postRepository.updatePost(id, post)
     }
 }

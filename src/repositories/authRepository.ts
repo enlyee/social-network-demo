@@ -1,32 +1,32 @@
 import {EmailConfirmationType} from "../models/usersTypes";
-import {emailConfirmationCollection, usersCollection} from "../db/db";
 import {ObjectId} from "mongodb";
+import {EmailConfirmationModel, UserModel} from "../db/db";
 
 export const authRepository = {
     async createConfirmation(confirmation: EmailConfirmationType) {
-        await emailConfirmationCollection.insertOne(confirmation)
+        await EmailConfirmationModel.create(confirmation)
     },
     async getConfirmation(code: string){
-        return await emailConfirmationCollection.findOne({confirmationCode: code})
+        return EmailConfirmationModel.findOne({confirmationCode: code}).lean()
     },
     async deleteConfirmationByCode(code: string){
-        await emailConfirmationCollection.findOneAndDelete({confirmationCode: code})
+        await EmailConfirmationModel.findOneAndDelete({confirmationCode: code})
     },
     async deleteConfirmationByUserId(userId: string){
-        await emailConfirmationCollection.findOneAndDelete({userId: userId})
+        await EmailConfirmationModel.findOneAndDelete({userId: userId})
     },
     async userConfirmated(userId: string) {
-        await usersCollection.updateOne({_id: new ObjectId(userId)}, {$set: {isConfirmed: true}})
+        await UserModel.updateOne({_id: new ObjectId(userId)}, {$set: {isConfirmed: true}})
     },
     async getUserConfirmationStatusByEmail(email: string) {
-        const user = await usersCollection.findOne({email: email})
+        const user = await UserModel.findOne({email: email}).lean()
         if (!user) {
             return 'notExist'
         }
         return user.isConfirmed
     },
     async getUserIdByEmail(email: string) {
-        const user = await usersCollection.findOne({email: email})
+        const user = await UserModel.findOne({email: email}).lean()
         return user?._id.toString()
     }
 }

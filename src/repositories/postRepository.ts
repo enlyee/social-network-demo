@@ -1,22 +1,22 @@
 import {PostInputType, PostsDbType, PostsOutputType, QueryPostsOutputType} from "../models/postsType";
-import {postsCollection} from "../db/db";
 import {PostMapper} from "../models/mappers/postsMapper";
 import {ObjectId} from "mongodb";
 import {QueryGetPostsType} from "../models/commonType";
+import {PostModel} from "../db/db";
 const sortingPostsName = ['id', 'title', 'shortDescription', 'content', 'blogName', 'createdAt', 'blogId']
 export const postRepository = {
     async getPosts(query: QueryGetPostsType): Promise<QueryPostsOutputType> {
+        //todo ...............
         let sortBy = (query.sortBy) ? (sortingPostsName.includes(query.sortBy)) ? (query.sortBy) : 'createdAt' : 'createdAt'
         let sortDirection = query.sortDirection || 'desc'
         let pageNumber = query.pageNumber || 1
         let pageSize = query.pageSize || 10
 
-        const collectionSize = (await postsCollection.find({}).toArray()).length
+        const collectionSize = (await PostModel.find({}).lean()).length
 
-        const posts = await postsCollection
+        const posts = await PostModel
             .find({})
-            .sort(sortBy, sortDirection).skip((pageNumber-1)*pageSize).limit(+pageSize)
-            .toArray()
+            .sort({[sortBy]: sortDirection}).skip((pageNumber-1)*pageSize).limit(+pageSize).lean()
         return {
             pagesCount: Math.ceil(collectionSize/pageSize),
             page: +pageNumber,
@@ -26,28 +26,29 @@ export const postRepository = {
         }
     },
     async getPostById(id: string): Promise<PostsOutputType | false> {
-        const post = await postsCollection.findOne({_id: new ObjectId(id)})
+        const post = await PostModel.findOne({_id: new ObjectId(id)}).lean()
         if (!post) {
             return false
         }
         return PostMapper(post)
     },
     async createPost(inputPost: PostsDbType): Promise<PostsOutputType | false> {
-        const newPost = await postsCollection.insertOne(inputPost)
+        const newPost = await PostModel.create(inputPost)
         return PostMapper({
-            _id: newPost.insertedId,
+            _id: newPost._id,
             ...inputPost
         })
     },
     async deletePost(id: string): Promise<boolean>{
-        const ind = await postsCollection.deleteOne({_id: new ObjectId(id)})
+        const ind = await PostModel.deleteOne({_id: new ObjectId(id)})
         return !!ind.deletedCount
     },
     async updatePost(id: string, post: PostInputType){
-         return await postsCollection.updateOne({_id: new ObjectId(id)}, {
-            $set: {title: post.title, shortDescription: post.shortDescription, content: post.content, blogId: post.blogId}
-        })
-
-
+         return !!(await PostModel.updateOne({id}, {
+                 title: post.title,
+                 shortDescription: post.shortDescription,
+                 content: post.content,
+                 blogId: post.blogId
+         })).matchedCount
     }
 }

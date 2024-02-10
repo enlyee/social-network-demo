@@ -1,37 +1,34 @@
-import {usersCollection} from "../db/db";
 import {FindParamsUsersType, UsersDbType} from "../models/usersTypes";
 import {UsersFindManyMapper} from "../models/mappers/usersMapper";
 import {ObjectId} from "mongodb";
+import {UserModel} from "../db/db";
 
 export const usersRepository = {
     async findUserByLoginOrEmail(login: string) {
-        return await usersCollection.findOne({$or: [{email: login}, {login: login}]})
+        return UserModel.findOne({$or: [{email: login}, {login: login}]})
     },
     async createUser(user: UsersDbType) {
-        const newUser = await usersCollection.insertOne(user)
+        const newUser = await UserModel.create(user)
         return UsersFindManyMapper({
-            _id: newUser.insertedId,
+            _id: newUser._id,
             ...user
         })
     },
     async findUsers(findParams: FindParamsUsersType) {
-        const collectionSize = (await usersCollection
+        const collectionSize = (await UserModel
             .find({$or:[{login: new RegExp(findParams.searchLoginTerm, 'i')}, {email: new RegExp(findParams.searchEmailTerm, 'i')}]})
-            .toArray()).length
-        console.log((await usersCollection
-            .find({})
-            .toArray()))
-        const users = await usersCollection
+            .lean()).length
+        const users = await UserModel
             .find({$or:[{login: new RegExp(findParams.searchLoginTerm, 'i')}, {email: new RegExp(findParams.searchEmailTerm, 'i')}]})
-            .sort(findParams.sortBy, findParams.sortDirection).skip((findParams.pageNumber-1)*findParams.pageSize).limit(+findParams.pageSize)
-            .toArray()
+            .sort({[findParams.sortBy]: findParams.sortDirection}).skip((findParams.pageNumber-1)*findParams.pageSize).limit(+findParams.pageSize)
+            .lean()
         return {collectionSize, users}
     },
     async deleteUser(id: string) {
-        const index = await usersCollection.deleteOne({_id: new ObjectId(id)})
+        const index = await UserModel.deleteOne({_id: new ObjectId(id)})
         return !!index.deletedCount
     },
     async findUserById(id: string) {
-        return await usersCollection.findOne({_id: new ObjectId(id)})
+        return UserModel.findOne({_id: new ObjectId(id)})
     }
 }

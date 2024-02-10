@@ -8,6 +8,7 @@ const sortingUsersName = ['login', 'email', 'createdAt']
 export const usersService = {
     async findUsers(query: QueryGetUsersType){
         const findParams: FindParamsUsersType = {
+            //TODO вынести
             searchLoginTerm: query.searchLoginTerm || '',
             searchEmailTerm: query.searchEmailTerm || '',
             sortBy: (query.sortBy) ? (sortingUsersName.includes(query.sortBy)) ? (query.sortBy) : 'createdAt' : 'createdAt',

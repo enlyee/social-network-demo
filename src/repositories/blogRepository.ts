@@ -1,5 +1,5 @@
 import {BlogInputType, BlogsDbType, BlogsOutputType, QueryBlogsOutputType} from "../models/blogsType";
-import {blogsCollection, postsCollection} from "../db/db";
+import {BlogModel, PostModel} from "../db/db";
 import {BlogMapper} from "../models/mappers/blogsMapper";
 import {ObjectId} from "mongodb";
 import {QueryGetBlogsType, QueryGetPostsType} from "../models/commonType";
@@ -11,19 +11,19 @@ const sortingPostsName = ['id', 'title', 'shortDescription', 'content', 'blogNam
 
 export const blogRepository = {
     async findBlogs(query: QueryGetBlogsType): Promise<QueryBlogsOutputType> {
-
+        //todo .............
         let searchNameTerm = query.searchNameTerm || ''
         let sortBy = (query.sortBy) ? (sortingBlogsName.includes(query.sortBy)) ? (query.sortBy) : 'createdAt' : 'createdAt'
         let sortDirection = query.sortDirection || 'desc'
         let pageNumber = query.pageNumber || 1
         let pageSize = query.pageSize || 10
 
-        const collectionSize = (await blogsCollection.find({name: new RegExp(searchNameTerm, 'i')}).toArray()).length
+        const collectionSize = (await BlogModel.find({name: new RegExp(searchNameTerm, 'i')}).lean()).length
 
-        const blogs = await blogsCollection
+        const blogs = await BlogModel
             .find({name: new RegExp(searchNameTerm, 'i')})
-            .sort(sortBy, sortDirection).skip((pageNumber-1)*pageSize).limit(+pageSize)
-            .toArray()
+            .sort({[sortBy]: sortDirection}).skip((pageNumber-1)*pageSize).limit(+pageSize)
+            .lean()
         return {
             pagesCount: Math.ceil(collectionSize/pageSize),
             page: +pageNumber,
@@ -34,7 +34,7 @@ export const blogRepository = {
 
     },
     async getBlogById(id: string): Promise<BlogsOutputType | false> {
-        const blog = await blogsCollection.findOne({_id: new ObjectId(id)})
+        const blog = await BlogModel.findOne({_id: new ObjectId(id)})
         if (blog) {
             return BlogMapper(blog)
         }
@@ -43,21 +43,23 @@ export const blogRepository = {
         }
     },
     async createBlog(blog: BlogsDbType): Promise<BlogsOutputType> {
-        const newBlog = await blogsCollection.insertOne(blog)
+        const newBlog = await BlogModel.create(blog)
         return BlogMapper({
-            _id: newBlog.insertedId,
+            _id: newBlog._id,
             ...blog
         })
 
     },
     async deleteBlog(id: string): Promise<boolean>{
 
-        const blogIndex = await blogsCollection.deleteOne({_id: (new ObjectId (id))})
+        const blogIndex = await BlogModel.deleteOne({_id: (new ObjectId (id))})
         return !!blogIndex.deletedCount
     },
     async updateBlog(id: string, blog: BlogInputType) {
-        return await blogsCollection.updateOne({_id: new ObjectId(id)}, {
-            $set: {name: blog.name, description: blog.description, websiteUrl: blog.websiteUrl}
+        return BlogModel.updateOne({_id: new ObjectId(id)}, {
+            name: blog.name,
+            description: blog.description,
+            websiteUrl: blog.websiteUrl
         })
 
     },
@@ -67,12 +69,14 @@ export const blogRepository = {
         let pageNumber = query.pageNumber || 1
         let pageSize = query.pageSize || 10
 
-        const collectionSize = (await postsCollection.find({blogId: id}).toArray()).length
 
-        const posts = await postsCollection
+        //todo: const totalCount: number = await UserModel.countDocuments(findFilter);
+        const collectionSize = (await PostModel.find({blogId: id}).lean()).length
+
+        const posts = await PostModel
             .find({blogId: id})
-            .sort(sortBy, sortDirection).skip((pageNumber-1)*pageSize).limit(+pageSize)
-            .toArray()
+            .sort({[sortBy]: sortDirection}).skip((pageNumber-1)*pageSize).limit(+pageSize)
+            .lean()
         return {
             pagesCount: Math.ceil(collectionSize/pageSize),
             page: +pageNumber,

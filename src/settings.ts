@@ -2,10 +2,8 @@ import express, {Request, Response} from "express";
 import {blogRouter} from "./routers/blogRouter";
 import {postRouter} from "./routers/postRouter";
 import {
-    blogsCollection,
-    commentsCollection, deviceAuthSessionsCollection,
-    postsCollection, rateLimitIpCollection,
-    usersCollection
+    BlogModel, CommentModel, DeviceAuthSessionModel, EmailConfirmationModel,
+    PostModel, RateLimitIpModel, UserModel,
 } from "./db/db";
 import {authRouter} from "./routers/authRouter";
 import {usersRouter} from "./routers/usersRouter";
@@ -20,12 +18,13 @@ app.use(cookieParser())
 app.set('trust proxy', true)
 
 app.delete("/testing/all-data", async (req: Request, res: Response) => {
-    await blogsCollection.deleteMany({})
-    await postsCollection.deleteMany({})
-    await usersCollection.deleteMany({})
-    await commentsCollection.deleteMany({})
-    await rateLimitIpCollection.deleteMany({})
-    await deviceAuthSessionsCollection.deleteMany({})
+    await BlogModel.deleteMany({})
+    await PostModel.deleteMany({})
+    await UserModel.deleteMany({})
+    await CommentModel.deleteMany({})
+    await RateLimitIpModel.deleteMany({})
+    await DeviceAuthSessionModel.deleteMany({})
+    await EmailConfirmationModel.deleteMany({})
     res.sendStatus(204)
 });
 app.use("/blogs", blogRouter)

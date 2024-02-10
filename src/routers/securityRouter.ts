@@ -6,6 +6,7 @@ import {jwtAdapter} from "../adapters/jwtAdapter";
 export const securityRouter = Router({})
 
 securityRouter.get('/devices', async (req: Request, res: Response) => {
+    //todo: 10 and 15 to service. Get token payload to middleware
     const refreshToken = req.cookies.refreshToken
     const tokenContains = await jwtAdapter.getTokenPayload(refreshToken)
     if (!tokenContains) {

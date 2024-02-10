@@ -10,8 +10,7 @@ import {BlogInputType, BlogsOutputType} from "../models/blogsType";
 import {InputBlogsMiddleware} from "../middlewares/inputBlogsMiddleware";
 import {adminAuthMiddleware} from "../middlewares/adminAuthMiddleware";
 import {blogService} from "../domain/blogService";
-import {postService} from "../domain/postService";
-import {InputPostsMiddleware, InputPostsMiddlewareWithoutId} from "../middlewares/inputPostsMiddleware";
+import {InputPostsMiddlewareWithoutId} from "../middlewares/inputPostsMiddleware";
 import {PostInputTypeWithoutId} from "../models/postsType";
 import {ObjectId} from "mongodb";
 
@@ -28,6 +27,7 @@ blogRouter.get('/:id/posts', async (req: RequestWithParamsAndQuery<{ id: string 
         res.sendStatus(404)
         return
     }
+    //todo service to sercice
     const blog = await blogService.getBlogById(req.params.id)
     if (!blog) {
         res.sendStatus(404)
