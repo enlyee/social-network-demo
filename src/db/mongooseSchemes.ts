@@ -4,7 +4,7 @@ import {BlogsDbType} from "../models/blogsType";
 import {WithId} from "mongodb";
 import {EmailConfirmationType, UsersDbType} from "../models/usersTypes";
 import {CommentsDbType} from "../models/commentsTypes";
-import {AuthSessionsType, RateLimitIpType} from "../models/authTypes";
+import {AuthSessionsType, PasswordRecoveryType, RateLimitIpType} from "../models/authTypes";
 
 export const PostSchema = new mongoose.Schema<WithId<PostsDbType>>({
     title: {type: String, require: true},
@@ -61,4 +61,10 @@ export const RateLimitIpSchema = new mongoose.Schema<WithId<RateLimitIpType>>({
     ip: {type: String, require: true},
     url: {type: String, require: true},
     date: {type: Date, require: true}
+})
+
+export const PasswordRecoverySchema = new mongoose.Schema<WithId<PasswordRecoveryType>>({
+    email: {type: String, require: true},
+    code: {type: String, require: true},
+    expirationDate: {type: Date, require: true}
 })

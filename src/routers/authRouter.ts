@@ -12,6 +12,8 @@ import {EmailConfirmationCodeMiddleware} from "../middlewares/confirmationEmailM
 import {emailResendingMiddleware} from "../middlewares/emailResendingMiddleware";
 import {RateLimitIpMiddleware} from "../middlewares/rateLimitIpMiddleware";
 import {jwtAdapter} from "../adapters/jwtAdapter";
+import {PasswordRecoveryMiddleware} from "../middlewares/passwordRecoveryMiddleware";
+import {NewPasswordMiddleware} from "../middlewares/newPasswordMiddleware";
 
 export const authRouter = Router({})
 
@@ -83,6 +85,17 @@ authRouter.post('/logout', async (req: Request, res: Response) => {
         res.sendStatus(401)
         return
     }
+    res.sendStatus(204)
+})
+
+authRouter.post('/password-recovery', ...PasswordRecoveryMiddleware, RateLimitIpMiddleware, async (req: RequestWithBody<{ email: string }>, res: Response)=>{
+    const email = req.body.email
+    await authService.sendPasswordRecoveryEmail(email)
+    res.sendStatus(204)
+})
+
+authRouter.post('/new-password', ...NewPasswordMiddleware, RateLimitIpMiddleware, async (req: RequestWithBody<{ newPassword: string, recoveryCode: string }>, res: Response) =>{
+    await authService.setNewPasswordToUser(req.body.recoveryCode, req.body.newPassword)
     res.sendStatus(204)
 })
 

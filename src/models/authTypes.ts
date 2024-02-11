@@ -12,3 +12,9 @@ export type AuthSessionsType = {
     lastActiveDate: Date,
     expiresAt: Date
 }
+
+export type PasswordRecoveryType = {
+    email: string,
+    code: string,
+    expirationDate: Date
+}

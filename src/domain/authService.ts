@@ -6,6 +6,7 @@ import {add} from "date-fns/add";
 import {authRepository} from "../repositories/authRepository";
 import {sessionRepository} from "../repositories/sessionRepository";
 import {emailManager} from "../managers/emailManager";
+import {PasswordRecoveryType} from "../models/authTypes";
 
 export const authService = {
     async checkCredentials(login: string, password: string){
@@ -72,6 +73,24 @@ export const authService = {
             return null
         }
         return sessionRepository.deleteSession(userId, deviceId)
+    },
+    async sendPasswordRecoveryEmail(email: string) {
+        const isRegistred = await authRepository.isEmailRegistred(email)
+        if (!isRegistred) return
+        const code = uuidv4()
+        const passwordRecoveryData: PasswordRecoveryType = {
+            email: email,
+            code: code,
+            expirationDate: add(new Date(), {
+                minutes: 3
+            }),
+        }
+        await authRepository.createPasswordRecovery(passwordRecoveryData)
+        await emailManager.passwordRecovery(email, code)
+    },
+    async setNewPasswordToUser(code: string, password: string){
+        const passwordSalt = await bcrypt.genSalt(10)
+        const passwordHash = await authService.generateHash(password, passwordSalt)
+        await authRepository.updatePasswordByCode(code, passwordSalt, passwordHash)
     }
-
  }

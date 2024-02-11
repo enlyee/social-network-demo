@@ -1,6 +1,7 @@
 import {EmailConfirmationType} from "../models/usersTypes";
 import {ObjectId} from "mongodb";
-import {EmailConfirmationModel, UserModel} from "../db/db";
+import {EmailConfirmationModel, PasswordRecoveryModel, UserModel} from "../db/db";
+import {PasswordRecoveryType} from "../models/authTypes";
 
 export const authRepository = {
     async createConfirmation(confirmation: EmailConfirmationType) {
@@ -28,5 +29,24 @@ export const authRepository = {
     async getUserIdByEmail(email: string) {
         const user = await UserModel.findOne({email: email}).lean()
         return user?._id.toString()
+    },
+    async createPasswordRecovery(recovery: PasswordRecoveryType){
+        await PasswordRecoveryModel.create(recovery)
+        await PasswordRecoveryModel.deleteMany({expirationDate: {$lt: new Date()}})
+    },
+    async isEmailRegistred(email: string){
+        return !!(await UserModel.findOne({email: email}).lean())
+    },
+    async getUpdatePasswordCode(code: string) {
+        const status = await PasswordRecoveryModel.findOne({code: code}).lean()
+        if (!status) return false
+        return (new Date() <= status.expirationDate)
+    },
+    async updatePasswordByCode(code: string, passwordSalt: string, passwordHash: string){
+        const confirmation = (await PasswordRecoveryModel.findOne({code: code}).lean())
+        if (!confirmation) return false
+        await PasswordRecoveryModel.deleteOne({code: code})
+        await UserModel.updateOne({email: confirmation.email}, {passwordHash: passwordHash, passwordSalt: passwordSalt})
+        return true
     }
 }
