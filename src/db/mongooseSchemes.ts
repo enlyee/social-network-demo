@@ -1,9 +1,9 @@
-import mongoose from "mongoose";
+import mongoose, {Schema} from "mongoose";
 import {PostsDbType} from "../models/postsType";
 import {BlogsDbType} from "../models/blogsType";
 import {WithId} from "mongodb";
 import {EmailConfirmationType, UsersDbType} from "../models/usersTypes";
-import {CommentsDbType} from "../models/commentsTypes";
+import {CommentsDbType, LikesDislikesDbType} from "../models/commentsTypes";
 import {AuthSessionsType, PasswordRecoveryType, RateLimitIpType} from "../models/authTypes";
 
 export const PostSchema = new mongoose.Schema<WithId<PostsDbType>>({
@@ -57,7 +57,7 @@ export const DeviceAuthSessionSchema = new mongoose.Schema<WithId<AuthSessionsTy
     expiresAt: {type: Date, require: true}
 })
 
-export const RateLimitIpSchema = new mongoose.Schema<WithId<RateLimitIpType>>({
+export const RateLimitIpSchema: Schema<WithId<RateLimitIpType>> = new mongoose.Schema<WithId<RateLimitIpType>>({
     ip: {type: String, require: true},
     url: {type: String, require: true},
     date: {type: Date, require: true}
@@ -68,3 +68,10 @@ export const PasswordRecoverySchema = new mongoose.Schema<WithId<PasswordRecover
     code: {type: String, require: true},
     expirationDate: {type: Date, require: true}
 })
+
+export const LikeDislikeCommentsSchema = new mongoose.Schema<WithId<LikesDislikesDbType>>({
+    commentId: {type: String, require: true},
+    userId: {type: String, require: true},
+    status: {type: String, require: true}
+})
+

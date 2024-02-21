@@ -16,14 +16,19 @@ export type FindParamsCommentsType = {
     postId: string
 }
 
-export type CommentsOutputType = {
+export type CommentsViewType = {
     id: string,
     content: string,
     commentatorInfo: {
         userId: string,
         userLogin: string
     },
-    createdAt: string
+    createdAt: string,
+    likesInfo: {
+        likesCount: number,
+        dislikesCount: number,
+        myStatus: 'None' | 'Like' | 'Dislike'
+    }
 }
 
 export type CommentsDtoType = {
@@ -35,4 +40,10 @@ export type CommentsDtoType = {
     },
     createdAt: string,
     postId: string
+}
+
+export type LikesDislikesDbType = {
+    commentId: string,
+    userId: string,
+    status: 'Like' | 'Dislike' | 'None'
 }

@@ -17,3 +17,20 @@ export const UserAuthMiddleware = async (req: Request, res: Response, next: Next
     }
     res.sendStatus(401)
 }
+
+export const TryAuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.headers.authorization) {
+        next()
+        return
+    }
+
+    const token = req.headers.authorization.split(' ')[1]
+
+    const userId = (await jwtAdapter.getTokenPayload(token)).userId
+    if (userId) {
+        req.userId = userId.toString()
+        next()
+        return
+    }
+    res.sendStatus(401)
+}

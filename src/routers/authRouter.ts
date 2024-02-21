@@ -18,7 +18,6 @@ import {NewPasswordMiddleware} from "../middlewares/newPasswordMiddleware";
 export const authRouter = Router({})
 
 authRouter.post('/login', RateLimitIpMiddleware, LoginUserMiddleware, async (req: RequestWithBody<AuthType>, res: Response) => {
-    //todo sokratitttt
     const userId = await authService.checkCredentials(req.body.loginOrEmail, req.body.password)
     if (!userId) {
         res.sendStatus(401)
@@ -53,7 +52,6 @@ authRouter.post('/registration-email-resending', RateLimitIpMiddleware, ...email
 })
 
 authRouter.post('/refresh-token', async (req: Request, res: Response) =>{
-    /////////////////todo!!!!!!!!!!!!!
     const oldToken = req.cookies.refreshToken
     const decToken = await jwtAdapter.getTokenPayload(oldToken)
     if (!decToken) {

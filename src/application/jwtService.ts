@@ -3,13 +3,14 @@ import {AuthSessionsType} from "../models/authTypes";
 import {randomUUID} from "crypto";
 import {add} from "date-fns/add";
 import {jwtAdapter} from "../adapters/jwtAdapter";
-const accessTokenExpires = 10
-const refreshTokenExpires = 20
+const accessTokenExpires = 6000
+const refreshTokenExpires = 60000
 
-export const jwtService = {
+
+class JwtService {
     async createJwtAccessToken(userId: string) {
         return await jwtAdapter.createToken({userId: userId}, accessTokenExpires)
-    },
+    }
     async createLoginJwtRefreshToken(userId: string, ip: string, deviceName: string) {
         const deviceId = randomUUID()
         const refreshToken = await jwtAdapter.createToken({userId: userId, deviceId: deviceId}, refreshTokenExpires)
@@ -24,7 +25,7 @@ export const jwtService = {
         }
         await sessionRepository.addAuthSession(auth)
         return refreshToken
-    },
+    }
     async updateJwtRefreshToken(userId: string, deviceId: string, tokenIssuedDate: Date) {
         const sessionIssuedAt = await sessionRepository.getSessionIssuedAt(userId, deviceId)
         if ( (!sessionIssuedAt) || (sessionIssuedAt.toISOString() != tokenIssuedDate.toISOString())) {
@@ -39,3 +40,4 @@ export const jwtService = {
         return refreshToken
     }
 }
+export const jwtService = new JwtService()

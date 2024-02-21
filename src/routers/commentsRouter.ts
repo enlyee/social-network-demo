@@ -1,13 +1,17 @@
 import {Router, Request, Response} from "express";
 import {RequestWithParams, RequestWithParamsAndBody} from "../models/commonType";
 import {commentsService} from "../domain/commentsService";
-import {UserAuthMiddleware} from "../middlewares/userAuthMiddleware";
+import {TryAuthMiddleware, UserAuthMiddleware} from "../middlewares/userAuthMiddleware";
 import {UpdateCommentsMiddleware} from "../middlewares/inputCommentsMiddleware";
+import {CommentsViewType} from "../models/commentsTypes";
+import {LikeStatusMiddleware} from "../middlewares/likeStatusMiddleware";
 
 export const commentsRouter = Router({})
 
-commentsRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res: Response) => {
-    const comment = await commentsService.getCommentById(req.params.id)
+commentsRouter.get('/:id', TryAuthMiddleware, async (req: RequestWithParams<{ id: string }>, res: Response) => {
+    let comment: false | CommentsViewType
+    if (!req.userId) comment = await commentsService.getCommentById(req.params.id)
+    else comment = await commentsService.getCommentById(req.params.id, req.userId)
     switch (comment) {
         case false:
             res.sendStatus(404)
@@ -40,10 +44,20 @@ commentsRouter.put('/:id', UserAuthMiddleware, ...UpdateCommentsMiddleware, asyn
         case 403:
             res.sendStatus(result)
             break
-
         default:
             res.sendStatus(204)
 
     }
 })
 
+commentsRouter.put('/:id/like-status', UserAuthMiddleware, ...LikeStatusMiddleware, async (req: RequestWithParamsAndBody<{ id: string }, {likeStatus: 'None' | 'Like' | 'Dislike'}>, res: Response) =>{
+    const result = await commentsService.likeDislikeComment(req.body.likeStatus, req.userId!, req.params.id)
+    switch (result) {
+        case 404:
+            res.sendStatus(404)
+            break
+        default:
+            res.sendStatus(204)
+
+    }
+})

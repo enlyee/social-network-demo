@@ -3,9 +3,10 @@ import {usersRepository} from "../repositories/usersRepository";
 import {QueryGetUsersType} from "../models/commonType";
 import {FindParamsUsersType, UserMeType, UsersDbType} from "../models/usersTypes";
 import {UsersFindManyMapper, UsersFindMeMapper} from "../models/mappers/usersMapper";
-import {authService} from "./authService";
+import {bcryptAdapter} from "../adapters/bcryptAdapter";
 const sortingUsersName = ['login', 'email', 'createdAt']
-export const usersService = {
+
+class UsersService {
     async findUsers(query: QueryGetUsersType){
         const findParams: FindParamsUsersType = {
             //TODO вынести
@@ -26,10 +27,10 @@ export const usersService = {
             totalCount: collectionSize,
             items: users.map(UsersFindManyMapper)
         }
-    },
+    }
     async createUser(login: string, email: string, password: string) {
         const passwordSalt = await bcrypt.genSalt(10)
-        const passwordHash = await authService.generateHash(password, passwordSalt)
+        const passwordHash = await bcryptAdapter.generateHash(password, passwordSalt)
         const user: UsersDbType = {
             login: login,
             email: email,
@@ -39,12 +40,14 @@ export const usersService = {
             isConfirmed: true
         }
         return await usersRepository.createUser(user)
-    },
+    }
     async deleteUser(id: string) {
         return await usersRepository.deleteUser(id)
-    },
+    }
     async findUserById(userId: string): Promise<UserMeType> {
         const user: any = await usersRepository.findUserById(userId)
         return UsersFindMeMapper(user)
     }
+
 }
+export const usersService = new UsersService()

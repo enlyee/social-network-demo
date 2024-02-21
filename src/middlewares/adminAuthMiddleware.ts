@@ -11,7 +11,6 @@ export const adminAuthMiddleware = (req: Request, res: Response, next: NextFunct
     }
     const inputAuthKey = authHeader.split(' ')[1]
     const serverAuthKey = btoa(adminLogin + ':' + adminPass)
-    console.log(inputAuthKey, serverAuthKey)
     if (inputAuthKey !== serverAuthKey) {
         res.sendStatus(401)
         return

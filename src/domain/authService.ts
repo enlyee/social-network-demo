@@ -7,8 +7,9 @@ import {authRepository} from "../repositories/authRepository";
 import {sessionRepository} from "../repositories/sessionRepository";
 import {emailManager} from "../managers/emailManager";
 import {PasswordRecoveryType} from "../models/authTypes";
+import {bcryptAdapter} from "../adapters/bcryptAdapter";
 
-export const authService = {
+class AuthService {
     async checkCredentials(login: string, password: string){
         const user = await usersRepository.findUserByLoginOrEmail(login)
 
@@ -16,20 +17,17 @@ export const authService = {
             return false
         }
 
-        const passwordHash = await this.generateHash(password, user.passwordSalt)
+        const passwordHash = await bcryptAdapter.generateHash(password, user.passwordSalt)
         if (user.passwordHash === passwordHash) {
             return user._id.toString()
         } else {
             return false
         }
 
-    },
-    async generateHash(password: string, salt: string): Promise<string> {
-        return await bcrypt.hash(password, salt)
-    },
+    }
     async createUser(login: string, password: string, email: string) {
         const passwordSalt = await bcrypt.genSalt(10)
-        const passwordHash = await authService.generateHash(password, passwordSalt)
+        const passwordHash = await bcryptAdapter.generateHash(password, passwordSalt)
         const user: UsersDbType = {
             login: login,
             email: email,
@@ -48,12 +46,12 @@ export const authService = {
         }
         await authRepository.createConfirmation(emailConfirmationData)
         await emailManager.emailConfirmation(email, emailConfirmationData.confirmationCode)
-    },
+    }
     async emailConfirmation(code: string) {
         const userID = (await authRepository.getConfirmation(code))?.userId
         await authRepository.userConfirmated(userID!)
         await authRepository.deleteConfirmationByCode(code)
-    },
+    }
     async resendEmail(email: string) {
         const userId = await authRepository.getUserIdByEmail(email)
         await authRepository.deleteConfirmationByUserId(userId!)
@@ -66,14 +64,14 @@ export const authService = {
         }
         await authRepository.createConfirmation(emailConfirmationData)
         await emailManager.emailConfirmation(email, emailConfirmationData.confirmationCode)
-    },
+    }
     async deleteSession(userId: string, deviceId: string, tokenIssuedDate: Date){
         const sessionIssuedAt = await sessionRepository.getSessionIssuedAt(userId, deviceId)
         if ( (!sessionIssuedAt) || (sessionIssuedAt.toISOString() != tokenIssuedDate.toISOString())) {
             return null
         }
         return sessionRepository.deleteSession(userId, deviceId)
-    },
+    }
     async sendPasswordRecoveryEmail(email: string) {
         const isRegistred = await authRepository.isEmailRegistred(email)
         if (!isRegistred) return
@@ -87,10 +85,11 @@ export const authService = {
         }
         await authRepository.createPasswordRecovery(passwordRecoveryData)
         await emailManager.passwordRecovery(email, code)
-    },
+    }
     async setNewPasswordToUser(code: string, password: string){
         const passwordSalt = await bcrypt.genSalt(10)
-        const passwordHash = await authService.generateHash(password, passwordSalt)
+        const passwordHash = await bcryptAdapter.generateHash(password, passwordSalt)
         await authRepository.updatePasswordByCode(code, passwordSalt, passwordHash)
     }
- }
+}
+export const authService = new AuthService()

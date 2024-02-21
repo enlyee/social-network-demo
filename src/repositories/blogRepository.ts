@@ -8,8 +8,7 @@ import {PostMapper} from "../models/mappers/postsMapper";
 const sortingBlogsName = ['id', 'name', 'description', 'createdAt']
 const sortingPostsName = ['id', 'title', 'shortDescription', 'content', 'blogName', 'createdAt', 'blogId']
 
-
-export const blogRepository = {
+class BlogRepository {
     async findBlogs(query: QueryGetBlogsType): Promise<QueryBlogsOutputType> {
         //todo .............
         let searchNameTerm = query.searchNameTerm || ''
@@ -32,7 +31,7 @@ export const blogRepository = {
             items: blogs.map(BlogMapper)
         }
 
-    },
+    }
     async getBlogById(id: string): Promise<BlogsOutputType | false> {
         const blog = await BlogModel.findOne({_id: new ObjectId(id)})
         if (blog) {
@@ -41,7 +40,7 @@ export const blogRepository = {
         else {
             return false
         }
-    },
+    }
     async createBlog(blog: BlogsDbType): Promise<BlogsOutputType> {
         const newBlog = await BlogModel.create(blog)
         return BlogMapper({
@@ -49,12 +48,12 @@ export const blogRepository = {
             ...blog
         })
 
-    },
+    }
     async deleteBlog(id: string): Promise<boolean>{
 
         const blogIndex = await BlogModel.deleteOne({_id: (new ObjectId (id))})
         return !!blogIndex.deletedCount
-    },
+    }
     async updateBlog(id: string, blog: BlogInputType) {
         return BlogModel.updateOne({_id: new ObjectId(id)}, {
             name: blog.name,
@@ -62,7 +61,7 @@ export const blogRepository = {
             websiteUrl: blog.websiteUrl
         })
 
-    },
+    }
     async findPostsByBlogId(id: string, query: QueryGetPostsType): Promise<QueryPostsOutputType>{
         let sortBy = (query.sortBy) ? (sortingPostsName.includes(query.sortBy)) ? (query.sortBy) : 'createdAt' : 'createdAt'
         let sortDirection = query.sortDirection || 'desc'
@@ -86,3 +85,4 @@ export const blogRepository = {
         }
     }
 }
+export const blogRepository = new BlogRepository()

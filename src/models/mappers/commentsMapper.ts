@@ -1,7 +1,14 @@
 import {WithId} from "mongodb";
-import {CommentsDbType, CommentsOutputType} from "../commentsTypes";
+import {CommentsDbType, CommentsViewType} from "../commentsTypes";
+import {commentsRepository} from "../../repositories/commentsRepository";
 
-export const CommentsMapper = (commentsDb: WithId<CommentsDbType>): CommentsOutputType => {
+export const CommentsMapper = async (commentsDb: WithId<CommentsDbType>, userId?: string): Promise<CommentsViewType> => {
+
+    let status: 'None' | 'Like' | 'Dislike'
+    if (!userId) status = 'None'
+    else status = await commentsRepository.getCommentMyStatus(userId, commentsDb._id.toString())
+    const {likes, dislikes} = await commentsRepository.getCommentLikesDislikes(commentsDb._id.toString())
+
     return {
         id: commentsDb._id.toString(),
         content: commentsDb.content,
@@ -9,6 +16,11 @@ export const CommentsMapper = (commentsDb: WithId<CommentsDbType>): CommentsOutp
             userId: commentsDb.commentatorInfo.userId,
             userLogin: commentsDb.commentatorInfo.userLogin
         },
-        createdAt: commentsDb.createdAt
+        createdAt: commentsDb.createdAt,
+        likesInfo: {
+            likesCount: likes,
+            dislikesCount: dislikes,
+            myStatus: status
+        }
     }
 }

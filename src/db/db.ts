@@ -3,14 +3,14 @@ import {PostsDbType} from "../models/postsType";
 import {BlogsDbType} from "../models/blogsType";
 import dotenv from 'dotenv'
 import {EmailConfirmationType, UsersDbType} from "../models/usersTypes";
-import {CommentsDbType} from "../models/commentsTypes";
+import {CommentsDbType, LikesDislikesDbType} from "../models/commentsTypes";
 import {AuthSessionsType, PasswordRecoveryType, RateLimitIpType} from "../models/authTypes";
 import * as mongoose from "mongoose";
 import {
     BlogSchema,
     CommentSchema,
     DeviceAuthSessionSchema,
-    EmailConfirmationSchema, PasswordRecoverySchema,
+    EmailConfirmationSchema, LikeDislikeCommentsSchema, PasswordRecoverySchema,
     PostSchema, RateLimitIpSchema,
     UserSchema
 } from "./mongooseSchemes";
@@ -29,7 +29,10 @@ export const DeviceAuthSessionModel = mongoose.model<WithId<AuthSessionsType>>('
 export const RateLimitIpModel = mongoose.model<WithId<RateLimitIpType>>('rateLimitIps', RateLimitIpSchema)
 export const PasswordRecoveryModel = mongoose.model<WithId<PasswordRecoveryType>>('passwordRecoveries', PasswordRecoverySchema)
 
-// export const postsCollection = client.db().collection<PostsDbType>('posts')
+export const LikeDislikeCommentsModel = mongoose.model<WithId<LikesDislikesDbType>>('likesDislikesComments', LikeDislikeCommentsSchema)
+
+///----------without mongoose--------------
+//export const postsCollection = client.db().collection<PostsDbType>('posts')
 //export const blogsCollection = client.db().collection<BlogsDbType>('blogs')
 //export const usersCollection = client.db().collection<UsersDbType>('users')
 //export const commentsCollection = client.db().collection<CommentsDbType>('comments')
