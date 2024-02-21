@@ -47,7 +47,7 @@ class CommentsService {
         const status = await commentsRepository.updateCommentById(commentId, content)
         return status
     }
-    async getComments(postId: string, query: QueryGetCommentsType, userId?: string) {
+    async getComments(postId: string, query: QueryGetCommentsType, userId: string = 'None') {
         const isExist = await postService.getPostById(postId)
         if (!isExist) {
             return 404
@@ -66,7 +66,7 @@ class CommentsService {
             page: +findParams.pageNumber,
             pageSize: +findParams.pageSize,
             totalCount: collectionSize,
-            items: Promise.all(comments.map(comments => CommentsMapper(comments, userId)))
+            items: await Promise.all(comments.map(comments => CommentsMapper(comments, userId)))
         }
     }
     async postComment(postId: string, content: string, userId: string){

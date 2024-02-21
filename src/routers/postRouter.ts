@@ -13,7 +13,7 @@ import {InputPostsMiddleware} from "../middlewares/inputPostsMiddleware";
 import {postService} from "../domain/postService";
 import {ObjectId} from "mongodb";
 import {commentsService} from "../domain/commentsService";
-import {UserAuthMiddleware} from "../middlewares/userAuthMiddleware";
+import {TryAuthMiddleware, UserAuthMiddleware} from "../middlewares/userAuthMiddleware";
 import {UpdateCommentsMiddleware} from "../middlewares/inputCommentsMiddleware";
 export const postRouter = Router({})
 
@@ -61,8 +61,8 @@ postRouter.put('/:id', adminAuthMiddleware, ...InputPostsMiddleware, async (req:
     res.sendStatus(204)
 })
 
-postRouter.get('/:postId/comments', async (req: RequestWithParamsAndQuery<{ postId: string }, QueryGetCommentsType>, res: Response) =>{
-    const comments = await commentsService.getComments(req.params.postId, req.query)
+postRouter.get('/:postId/comments', TryAuthMiddleware, async (req: RequestWithParamsAndQuery<{ postId: string }, QueryGetCommentsType>, res: Response) =>{
+    const comments = await commentsService.getComments(req.params.postId, req.query, req.userId)
     switch (comments){
         case 404:
             res.sendStatus(404)

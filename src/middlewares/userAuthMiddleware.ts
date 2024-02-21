@@ -9,9 +9,9 @@ export const UserAuthMiddleware = async (req: Request, res: Response, next: Next
 
     const token = req.headers.authorization.split(' ')[1]
 
-    const userId = (await jwtAdapter.getTokenPayload(token)).userId
-    if (userId) {
-        req.userId = userId.toString()
+    const tokenPayload = await jwtAdapter.getTokenPayload(token)
+    if (tokenPayload) {
+        req.userId = tokenPayload.userId.toString()
         next()
         return
     }
@@ -26,9 +26,9 @@ export const TryAuthMiddleware = async (req: Request, res: Response, next: NextF
 
     const token = req.headers.authorization.split(' ')[1]
 
-    const userId = (await jwtAdapter.getTokenPayload(token)).userId
-    if (userId) {
-        req.userId = userId.toString()
+    const tokenPayload = await jwtAdapter.getTokenPayload(token)
+    if (tokenPayload) {
+        req.userId = tokenPayload.userId.toString()
         next()
         return
     }
