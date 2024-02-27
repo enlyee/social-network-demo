@@ -1,28 +1,15 @@
-import {Router, Request, Response} from "express";
+import {Router} from "express";
 import {adminAuthMiddleware} from "../middlewares/adminAuthMiddleware";
-import {QueryGetUsersType, RequestWithBody, RequestWithParams, RequestWithQuery} from "../models/commonType";
-import {usersService} from "../domain/usersService";
-import {UsersInputType} from "../models/usersTypes";
 import {RegistrationUserMiddleware} from "../middlewares/registrationUserMiddleware";
+import {container} from "../composition-root";
+import {UsersController} from "../controllers/usersController";
 
 export const usersRouter = Router({})
 
-usersRouter.get('/', adminAuthMiddleware, async (req: RequestWithQuery<QueryGetUsersType>, res: Response) => {
-    const query = req.query
-    const users = await usersService.findUsers(query)
-    res.send(users)
-})
+const usersController = container.resolve(UsersController)
 
-usersRouter.post('/', adminAuthMiddleware, ...RegistrationUserMiddleware, async (req: RequestWithBody<UsersInputType>, res: Response)=> {
-    const newUser = await usersService.createUser(req.body.login, req.body.email, req.body.password)
-    res.status(201).send(newUser)
-})
+usersRouter.get('/', adminAuthMiddleware, usersController.getUsers.bind(usersController))
 
-usersRouter.delete('/:id', adminAuthMiddleware, async (req: RequestWithParams<{ id: string }>, res: Response) => {
-    const status = await usersService.deleteUser(req.params.id)
-    if (!status) {
-        res.sendStatus(404)
-        return
-    }
-    res.sendStatus(204)
-})
+usersRouter.post('/', adminAuthMiddleware, ...RegistrationUserMiddleware, usersController.createUser.bind(usersController))
+
+usersRouter.delete('/:id', adminAuthMiddleware, usersController.deleteUser.bind(usersController))

@@ -1,9 +1,10 @@
 import {AuthSessionsType} from "../models/authTypes";
 import {add} from "date-fns/add";
 import {DeviceAuthSessionModel} from "../db/db";
+import {injectable} from "inversify";
 
-
-class SessionRepository {
+@injectable()
+export class SecurityRepository {
     async addAuthSession(auth: AuthSessionsType) {
         await DeviceAuthSessionModel.create(auth)
     }
@@ -36,5 +37,3 @@ class SessionRepository {
         return (await DeviceAuthSessionModel.findOne({$and: [{userId: userId}, {deviceId: deviceId}]}).lean())?.lastActiveDate
     }
 }
-
-export const sessionRepository = new SessionRepository()

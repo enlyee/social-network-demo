@@ -1,6 +1,7 @@
 import {body} from "express-validator";
-import {authRepository} from "../repositories/authRepository";
+import {AuthRepository} from "../repositories/authRepository";
 
+const authRepository = new AuthRepository()
 export const confirmationEmailCodeValidator = body('code').custom(async (code)=>{
     const confirmation = await authRepository.getConfirmation(code)
     if ( !confirmation || (confirmation.expirationDate < new Date()) ) {

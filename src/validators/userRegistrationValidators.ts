@@ -1,6 +1,6 @@
 import {body} from "express-validator";
-import {usersRepository} from "../repositories/usersRepository";
-
+import {UsersRepository} from "../repositories/usersRepository";
+const usersRepository = new UsersRepository()
 export const loginValidator = body('login').isLength({min: 3, max: 10}).matches('^[a-zA-Z0-9_-]*$').custom(async (login)=>{
     const user = await usersRepository.findUserByLoginOrEmail(login)
     if (user) {

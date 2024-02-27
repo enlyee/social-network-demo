@@ -2,8 +2,9 @@ import {EmailConfirmationType} from "../models/usersTypes";
 import {ObjectId} from "mongodb";
 import {EmailConfirmationModel, PasswordRecoveryModel, UserModel} from "../db/db";
 import {PasswordRecoveryType} from "../models/authTypes";
-
-class AuthRepository {
+import {injectable} from "inversify";
+@injectable()
+export class AuthRepository {
     async createConfirmation(confirmation: EmailConfirmationType) {
         await EmailConfirmationModel.create(confirmation)
     }
@@ -50,4 +51,3 @@ class AuthRepository {
         return true
     }
 }
-export const authRepository = new AuthRepository()

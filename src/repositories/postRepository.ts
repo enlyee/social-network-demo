@@ -1,41 +1,21 @@
-import {PostInputType, PostsDbType, PostsOutputType, QueryPostsOutputType} from "../models/postsType";
-import {PostMapper} from "../models/mappers/postsMapper";
+import {
+    PostInputType,
+    PostsDbType,
+    PostsOutputType
+} from "../models/postsType";
 import {ObjectId} from "mongodb";
-import {QueryGetPostsType} from "../models/commonType";
-import {PostModel} from "../db/db";
-const sortingPostsName = ['id', 'title', 'shortDescription', 'content', 'blogName', 'createdAt', 'blogId']
+import {LikeStatusType} from "../models/commonType";
+import {PostModel, PostsLikeDislikeModel} from "../db/db";
+import {injectable} from "inversify";
+import {Mappers} from "../models/mappers/mappers";
 
-class PostRepository {
-    async getPosts(query: QueryGetPostsType): Promise<QueryPostsOutputType> {
-        //todo ...............
-        let sortBy = (query.sortBy) ? (sortingPostsName.includes(query.sortBy)) ? (query.sortBy) : 'createdAt' : 'createdAt'
-        let sortDirection = query.sortDirection || 'desc'
-        let pageNumber = query.pageNumber || 1
-        let pageSize = query.pageSize || 10
-
-        const collectionSize = (await PostModel.find({}).lean()).length
-
-        const posts = await PostModel
-            .find({})
-            .sort({[sortBy]: sortDirection}).skip((pageNumber-1)*pageSize).limit(+pageSize).lean()
-        return {
-            pagesCount: Math.ceil(collectionSize/pageSize),
-            page: +pageNumber,
-            pageSize: +pageSize,
-            totalCount: collectionSize,
-            items: posts.map(PostMapper)
-        }
-    }
-    async getPostById(id: string): Promise<PostsOutputType | false> {
-        const post = await PostModel.findOne({_id: new ObjectId(id)}).lean()
-        if (!post) {
-            return false
-        }
-        return PostMapper(post)
+@injectable()
+export class PostRepository {
+    constructor(protected mappers: Mappers) {
     }
     async createPost(inputPost: PostsDbType): Promise<PostsOutputType | false> {
         const newPost = await PostModel.create(inputPost)
-        return PostMapper({
+        return this.mappers.postMapper({
             _id: newPost._id,
             ...inputPost
         })
@@ -52,6 +32,8 @@ class PostRepository {
             blogId: post.blogId
         })).matchedCount
     }
+    async likeDislikePost(postId: string, userId: string, status: LikeStatusType){
+        const updateStatus = await PostsLikeDislikeModel.updateOne({$and: [{postId: postId}, {userId: userId}]}, {status: status})
+        if (!updateStatus.matchedCount) await PostsLikeDislikeModel.create({postId: postId, userId: userId, status: status, addedAt: new Date()})
+    }
 }
-
-export const postRepository = new PostRepository()

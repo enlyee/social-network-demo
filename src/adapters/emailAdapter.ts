@@ -12,13 +12,14 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-export const emailAdapter = {
+class EmailAdapter {
     async sendMail(mailReceiver: string, subject: string, html: string) {
         const info = await transporter.sendMail({
             from: `"BloggerPlatform" <${process.env.EMAIL_LOGIN}>`,
             to: mailReceiver,
             subject: subject,
             html: html
-        });
+        })
 }}
 
+export const emailAdapter = new EmailAdapter()

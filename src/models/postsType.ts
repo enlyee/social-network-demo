@@ -1,4 +1,4 @@
-import {BlogsOutputType} from "./blogsType";
+import {LikeStatusType} from "./commonType";
 
 export type PostsOutputType = {
     id: string,
@@ -7,8 +7,21 @@ export type PostsOutputType = {
     content: string,
     blogId: string,
     blogName: string,
-    createdAt: string
+    createdAt: string,
+    extendedLikesInfo: {
+        likesCount: number,
+        dislikesCount: number,
+        myStatus: LikeStatusType,
+        newestLikes: NewestLikesType[]
+    }
 }
+
+export type NewestLikesType = {
+    addedAt: string,
+    userId: string,
+    login: string
+}
+
 export type PostInputType = {
     title: string,
     shortDescription: string,
@@ -35,4 +48,11 @@ export type QueryPostsOutputType = {
     pageSize: number,
     totalCount: number,
     items: PostsOutputType[]
+}
+
+export type PostsLikesDislikesDbType = {
+    postId: string,
+    userId: string,
+    status: LikeStatusType,
+    addedAt: Date
 }

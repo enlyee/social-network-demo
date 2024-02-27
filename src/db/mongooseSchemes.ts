@@ -1,5 +1,5 @@
 import mongoose, {Schema} from "mongoose";
-import {PostsDbType} from "../models/postsType";
+import {PostsDbType, PostsLikesDislikesDbType} from "../models/postsType";
 import {BlogsDbType} from "../models/blogsType";
 import {WithId} from "mongodb";
 import {EmailConfirmationType, UsersDbType} from "../models/usersTypes";
@@ -69,9 +69,16 @@ export const PasswordRecoverySchema = new mongoose.Schema<WithId<PasswordRecover
     expirationDate: {type: Date, require: true}
 })
 
-export const LikeDislikeCommentsSchema = new mongoose.Schema<WithId<LikesDislikesDbType>>({
+export const CommentLikeDislikeSchema = new mongoose.Schema<WithId<LikesDislikesDbType>>({
     commentId: {type: String, require: true},
     userId: {type: String, require: true},
+    status: {type: String, require: true}
+})
+
+export const PostLikeDislikesSchema = new mongoose.Schema<WithId<PostsLikesDislikesDbType>>({
+    postId: {type: String, require: true},
+    userId: {type: String, require: true},
+    addedAt: {type: Date, require: true},
     status: {type: String, require: true}
 })
 

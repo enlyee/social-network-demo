@@ -1,6 +1,6 @@
 import express, {Request, Response} from "express";
-import {blogRouter} from "./routers/blogRouter";
-import {postRouter} from "./routers/postRouter";
+import {blogRouter} from "./routers/blogsRouter";
+import {postsRouter} from "./routers/postsRouter";
 import {
     BlogModel, CommentModel, DeviceAuthSessionModel, EmailConfirmationModel,
     PostModel, RateLimitIpModel, UserModel,
@@ -26,9 +26,10 @@ app.delete("/testing/all-data", async (req: Request, res: Response) => {
     await DeviceAuthSessionModel.deleteMany({})
     await EmailConfirmationModel.deleteMany({})
     res.sendStatus(204)
+    //todo: add new
 });
 app.use("/blogs", blogRouter)
-app.use("/posts", postRouter)
+app.use("/posts", postsRouter)
 app.use('/auth', authRouter)
 app.use('/users', usersRouter)
 app.use('/comments', commentsRouter)

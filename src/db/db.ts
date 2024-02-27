@@ -1,5 +1,5 @@
 import {WithId} from "mongodb";
-import {PostsDbType} from "../models/postsType";
+import {PostsDbType, PostsLikesDislikesDbType} from "../models/postsType";
 import {BlogsDbType} from "../models/blogsType";
 import dotenv from 'dotenv'
 import {EmailConfirmationType, UsersDbType} from "../models/usersTypes";
@@ -10,9 +10,9 @@ import {
     BlogSchema,
     CommentSchema,
     DeviceAuthSessionSchema,
-    EmailConfirmationSchema, LikeDislikeCommentsSchema, PasswordRecoverySchema,
+    EmailConfirmationSchema, PasswordRecoverySchema,
     PostSchema, RateLimitIpSchema,
-    UserSchema
+    UserSchema, CommentLikeDislikeSchema, PostLikeDislikesSchema
 } from "./mongooseSchemes";
 dotenv.config()
 
@@ -29,7 +29,8 @@ export const DeviceAuthSessionModel = mongoose.model<WithId<AuthSessionsType>>('
 export const RateLimitIpModel = mongoose.model<WithId<RateLimitIpType>>('rateLimitIps', RateLimitIpSchema)
 export const PasswordRecoveryModel = mongoose.model<WithId<PasswordRecoveryType>>('passwordRecoveries', PasswordRecoverySchema)
 
-export const LikeDislikeCommentsModel = mongoose.model<WithId<LikesDislikesDbType>>('likesDislikesComments', LikeDislikeCommentsSchema)
+export const CommentsLikeDislikeModel = mongoose.model<WithId<LikesDislikesDbType>>('likesDislikesComments', CommentLikeDislikeSchema)
+export const PostsLikeDislikeModel = mongoose.model<WithId<PostsLikesDislikesDbType>>('likesDislikesPosts', PostLikeDislikesSchema)
 
 ///----------without mongoose--------------
 //export const postsCollection = client.db().collection<PostsDbType>('posts')

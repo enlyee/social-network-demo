@@ -41,3 +41,5 @@ export type AuthType = {
     loginOrEmail: string,
     password: string
 }
+
+export type LikeStatusType = 'Like' | 'Dislike' | 'None'

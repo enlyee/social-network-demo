@@ -1,12 +1,15 @@
 import bcrypt from 'bcryptjs'
-import {usersRepository} from "../repositories/usersRepository";
+import {UsersRepository} from "../repositories/usersRepository";
 import {QueryGetUsersType} from "../models/commonType";
 import {FindParamsUsersType, UserMeType, UsersDbType} from "../models/usersTypes";
 import {UsersFindManyMapper, UsersFindMeMapper} from "../models/mappers/usersMapper";
 import {bcryptAdapter} from "../adapters/bcryptAdapter";
+import {injectable} from "inversify";
 const sortingUsersName = ['login', 'email', 'createdAt']
 
-class UsersService {
+@injectable()
+export class UsersService {
+    constructor(protected usersRepository: UsersRepository) {}
     async findUsers(query: QueryGetUsersType){
         const findParams: FindParamsUsersType = {
             //TODO вынести
@@ -17,7 +20,7 @@ class UsersService {
             pageNumber: query.pageNumber || 1,
             pageSize: query.pageSize || 10
         }
-        const {collectionSize, users} = await usersRepository.findUsers(findParams)
+        const {collectionSize, users} = await this.usersRepository.findUsers(findParams)
 
 
         return {
@@ -39,15 +42,14 @@ class UsersService {
             createdAt: (new Date()).toISOString(),
             isConfirmed: true
         }
-        return await usersRepository.createUser(user)
+        return this.usersRepository.createUser(user)
     }
     async deleteUser(id: string) {
-        return await usersRepository.deleteUser(id)
+        return this.usersRepository.deleteUser(id)
     }
     async findUserById(userId: string): Promise<UserMeType> {
-        const user: any = await usersRepository.findUserById(userId)
+        const user: any = await this.usersRepository.findUserById(userId)
         return UsersFindMeMapper(user)
     }
 
 }
-export const usersService = new UsersService()

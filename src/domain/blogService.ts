@@ -1,44 +1,40 @@
-import {BlogInputType, BlogsDbType, BlogsOutputType, QueryBlogsOutputType} from "../models/blogsType";
-import {blogRepository} from "../repositories/blogRepository";
-import {QueryGetBlogsType, QueryGetPostsType} from "../models/commonType";
-import {PostInputType, PostInputTypeWithoutId, PostsOutputType, QueryPostsOutputType} from "../models/postsType";
-import {postService} from "./postService";
+import {BlogInputType, BlogsDbType, BlogsOutputType} from "../models/blogsType";
+import {PostInputType, PostInputTypeWithoutId, PostsOutputType} from "../models/postsType";
+import {PostService} from "./postService";
+import {BlogRepository} from "../repositories/blogRepository";
+import {injectable} from "inversify";
+import {ObjectId} from "mongodb";
+@injectable()
+export class BlogService {
 
-class BlogService {
-    async getBlogs(query: QueryGetBlogsType): Promise<QueryBlogsOutputType> {
-        return await blogRepository.findBlogs(query)
-    }
-    async getBlogById(id: string): Promise<BlogsOutputType | false> {
+    constructor(protected postService: PostService,
+                protected blogRepository: BlogRepository) {}
 
-        return await blogRepository.getBlogById(id)
-    }
     async createBlog(blog: BlogInputType): Promise<BlogsOutputType> {
         const inputBlog: BlogsDbType = {
             ...blog,
             createdAt: (new Date()).toISOString(),
             isMembership: false
         }
-        return await blogRepository.createBlog(inputBlog)
+        console.log(inputBlog)
+        return await this.blogRepository.createBlog(inputBlog)
 
     }
     async deleteBlog(id: string): Promise<boolean>{
-        return await blogRepository.deleteBlog(id)
+        if (!ObjectId.isValid(id)) return false
+        return await this.blogRepository.deleteBlog(id)
     }
     async updateBlog(id: string, blog: BlogInputType): Promise<boolean>{
-        const ind = await blogRepository.updateBlog(id, blog)
+        if (!ObjectId.isValid(id)) return false
+        const ind = await this.blogRepository.updateBlog(id, blog)
         return !!ind.matchedCount;
     }
-    async findPostsByBlogId(id: string, query: QueryGetPostsType): Promise<QueryPostsOutputType>{
-        return await blogRepository.findPostsByBlogId(id, query)
-    }
     async createPostByBlogId(id: string, post: PostInputTypeWithoutId): Promise<PostsOutputType | false>{
+        if (!ObjectId.isValid(id)) return false
         const body: PostInputType = {
             ...post,
             blogId: id
         }
-        return await postService.createPost(body)
+        return await this.postService.createPost(body)
     }
 }
-export const blogService = new BlogService()
-
-//await ???????

@@ -2,9 +2,11 @@ import {FindParamsUsersType, UsersDbType} from "../models/usersTypes";
 import {UsersFindManyMapper} from "../models/mappers/usersMapper";
 import {ObjectId} from "mongodb";
 import {UserModel} from "../db/db";
+import {injectable} from "inversify";
 
+@injectable()
+export class UsersRepository {
 
-class UsersRepository {
     async findUserByLoginOrEmail(login: string) {
         return UserModel.findOne({$or: [{email: login}, {login: login}]})
     }
@@ -32,6 +34,5 @@ class UsersRepository {
     async findUserById(id: string) {
         return UserModel.findOne({_id: new ObjectId(id)})
     }
-}
 
-export const usersRepository = new UsersRepository()
+}
